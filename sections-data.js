@@ -817,21 +817,21 @@ const SECTIONS_DATA = [
             <a href="#briants-bricks-blocks" class="quick-cat-card">
                 <div class="cat-icon-box"><i class="fa-solid fa-cubes"></i></div>
                 <h3>Bricks & Blocks</h3>
-                <p>Facing bricks, 7.3N dense blocks & aerated thermal units</p>
+                <p>Facing bricks, foundation blocks & thermal masonry</p>
                 <span class="cat-link">View Range <i class="fa-solid fa-chevron-right"></i></span>
             </a>
             
             <a href="#briants-insulation" class="quick-cat-card">
                 <div class="cat-icon-box"><i class="fa-solid fa-layer-group"></i></div>
                 <h3>Insulation</h3>
-                <p>PIR Celotex boards, acoustic roll & cavity batts</p>
+                <p>Rigid PIR boards, loft roll & cavity solutions</p>
                 <span class="cat-link">View Range <i class="fa-solid fa-chevron-right"></i></span>
             </a>
             
             <a href="#briants-timber" class="quick-cat-card">
                 <div class="cat-icon-box"><i class="fa-solid fa-tree"></i></div>
                 <h3>Timber & Sheets</h3>
-                <p>C24 treated timber, CLS, plywood & OSB3 boards</p>
+                <p>Carcassing timber, studwork, plywood & sheet goods</p>
                 <span class="cat-link">View Range <i class="fa-solid fa-chevron-right"></i></span>
             </a>
             
@@ -839,21 +839,21 @@ const SECTIONS_DATA = [
                 <span class="feat-pill">Power Hub</span>
                 <div class="cat-icon-box"><i class="fa-solid fa-hammer"></i></div>
                 <h3>Construction Machinery</h3>
-                <p>Belle Mixers, Stihl Cut-Off Saws & M-Class Dust Vacs</p>
+                <p>Cement mixers, cut-off saws & dust vacuums</p>
                 <span class="cat-link">View Range <i class="fa-solid fa-chevron-right"></i></span>
             </a>
             
             <a href="#briants-materials-deals" class="quick-cat-card">
                 <div class="cat-icon-box"><i class="fa-solid fa-mountain"></i></div>
                 <h3>Aggregates & Cement</h3>
-                <p>Bulk bags, sharp sand, ballast & Hanson Mastercrete</p>
+                <p>Sands, gravels, sub-base & bagged cement</p>
                 <span class="cat-link">View Range <i class="fa-solid fa-chevron-right"></i></span>
             </a>
             
             <a href="#briants-materials-deals" class="quick-cat-card">
                 <div class="cat-icon-box"><i class="fa-solid fa-sheet-plastic"></i></div>
                 <h3>Plaster & Drylining</h3>
-                <p>Knauf plasterboard, multifinish, drylining & metal studs</p>
+                <p>Plasterboard, multi-finish, coving & metal framing</p>
                 <span class="cat-link">View Range <i class="fa-solid fa-chevron-right"></i></span>
             </a>
         </div>
@@ -984,14 +984,7 @@ const SECTIONS_DATA = [
             <div class="product-tile">
                 <div class="tile-icon"><i class="fa-solid fa-building-shield"></i></div>
                 <h3>Facing Bricks & Engineering</h3>
-                <p>Wide selection of stock, wirecut, multi-red, and buff facing bricks from top UK brickmakers, alongside Class B engineering bricks.</p>
-                <div class="category-pill-list">
-                    <span>Multi-Reds</span>
-                    <span>Buff Bricks</span>
-                    <span>Stock Bricks</span>
-                    <span>Class B Blue</span>
-                    <span>Special Shapes</span>
-                </div>
+                <p>Extensive selection of stock, wirecut, multi-red, and buff facing bricks from top UK brickmakers, alongside high-strength Class B engineering bricks.</p>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Bricks <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1001,12 +994,6 @@ const SECTIONS_DATA = [
                 <div class="tile-icon"><i class="fa-solid fa-cube"></i></div>
                 <h3>Dense Concrete Blocks</h3>
                 <p>High-strength load-bearing aggregate blocks engineered for robust inner and outer cavity leaves, retaining walls, and beam and block flooring.</p>
-                <div class="category-pill-list">
-                    <span>7.3N Solid</span>
-                    <span>3.6N Standard</span>
-                    <span>Hollow Blocks</span>
-                    <span>Paint Grade</span>
-                </div>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Blocks <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1016,12 +1003,6 @@ const SECTIONS_DATA = [
                 <div class="tile-icon"><i class="fa-solid fa-feather-pointed"></i></div>
                 <h3>Aerated Thermal Blocks</h3>
                 <p>Ultra-lightweight autoclaved aerated blocks offering high thermal efficiency and easy handling to comply with Part L building regulations.</p>
-                <div class="category-pill-list">
-                    <span>Thermal Blocks</span>
-                    <span>Aircrete Units</span>
-                    <span>Lightweight</span>
-                    <span>Easy Chasing</span>
-                </div>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Thermal <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1031,12 +1012,6 @@ const SECTIONS_DATA = [
                 <div class="tile-icon"><i class="fa-solid fa-trowel-bricks"></i></div>
                 <h3>Trench & Foundation Blocks</h3>
                 <p>Solid foundation blocks designed to speed up groundwork below DPC level, replacing twin cavity brickwork with a single solid run.</p>
-                <div class="category-pill-list">
-                    <span>300mm Trench</span>
-                    <span>355mm Trench</span>
-                    <span>Below DPC</span>
-                    <span>Groundwork</span>
-                </div>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Trench <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1214,17 +1189,9 @@ const SECTIONS_DATA = [
                 <div class="insulation-header">
                     <div class="cat-icon-badge"><i class="fa-solid fa-layer-group"></i></div>
                     <h3>Rigid PIR Foil Insulation</h3>
-                    <p class="ins-dims">Celotex & Kingspan Foil-Faced Boards</p>
                 </div>
                 <div class="insulation-body">
-                    <p>High-performance polyisocyanurate (PIR) rigid foam insulation with dual aluminium foil facings for maximum thermal retention in minimum thickness.</p>
-                    <div class="category-pill-list">
-                        <span>25mm to 150mm Boards</span>
-                        <span>Pitched Roofs</span>
-                        <span>Flat Roofs</span>
-                        <span>Timber Frame Walls</span>
-                        <span>Underfloor Screed</span>
-                    </div>
+                    <p>High-performance polyisocyanurate (PIR) rigid foam insulation with dual aluminium foil facings for maximum thermal retention in minimum thickness across roofs, walls, and floors.</p>
                 </div>
                 <div class="insulation-cta">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore PIR Boards <i class="fa-solid fa-chevron-right"></i></a>
@@ -1235,16 +1202,9 @@ const SECTIONS_DATA = [
                 <div class="insulation-header">
                     <div class="cat-icon-badge"><i class="fa-solid fa-wind"></i></div>
                     <h3>Loft & Acoustic Mineral Wool</h3>
-                    <p class="ins-dims">Glass & Rock Wool Thermal / Soundproof Rolls</p>
                 </div>
                 <div class="insulation-body">
                     <p>Flexible non-combustible mineral wool designed for top-up loft insulation, partition wall sound reduction, and between-floor acoustic deadening.</p>
-                    <div class="category-pill-list">
-                        <span>100mm–200mm Loft Roll</span>
-                        <span>Acoustic Partitions</span>
-                        <span>Combi-Cut Rolls</span>
-                        <span>Euroclass A1 Non-Combustible</span>
-                    </div>
                 </div>
                 <div class="insulation-cta">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Mineral Wool <i class="fa-solid fa-chevron-right"></i></a>
@@ -1255,16 +1215,9 @@ const SECTIONS_DATA = [
                 <div class="insulation-header">
                     <div class="cat-icon-badge"><i class="fa-solid fa-shield-halved"></i></div>
                     <h3>Cavity Batts & Multi-Foil</h3>
-                    <p class="ins-dims">Masonry Cavity Insulation & Reflective Blankets</p>
                 </div>
                 <div class="insulation-body">
-                    <p>Specialist water-repellent cavity wall batts, vapour control membranes, and ultra-thin multi-foil blankets ideal for tight renovation profiles.</p>
-                    <div class="category-pill-list">
-                        <span>Full & Partial Cavity Batts</span>
-                        <span>Multi-Foil Blankets</span>
-                        <span>Breather Membranes</span>
-                        <span>Foil Jointing Tapes</span>
-                    </div>
+                    <p>Specialist water-repellent cavity wall batts, vapour control membranes, and ultra-thin multi-foil blankets ideal for modern extensions and renovations.</p>
                 </div>
                 <div class="insulation-cta">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Cavity & Foil <i class="fa-solid fa-chevron-right"></i></a>
@@ -1398,12 +1351,6 @@ const SECTIONS_DATA = [
                 <div class="tile-icon"><i class="fa-solid fa-tree"></i></div>
                 <h3>C24 Graded Structural Timber</h3>
                 <p>Kiln-dried, regularised, eased-edge treated timber for floor joists, stud walls, roof rafters, and heavy structural framing.</p>
-                <div class="category-pill-list">
-                    <span>4x2 (47x100mm)</span>
-                    <span>6x2 (47x150mm)</span>
-                    <span>8x2 (47x200mm)</span>
-                    <span>Roofing Battens</span>
-                </div>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Carcassing <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1413,12 +1360,6 @@ const SECTIONS_DATA = [
                 <div class="tile-icon"><i class="fa-solid fa-ruler-combined"></i></div>
                 <h3>CLS Studwork & Framing</h3>
                 <p>Planed all-round timber with radiused edges, engineered specifically for internal partition walls and timber frame construction.</p>
-                <div class="category-pill-list">
-                    <span>38 x 63mm (3x2)</span>
-                    <span>38 x 89mm (4x2)</span>
-                    <span>Internal Studwork</span>
-                    <span>Smooth Planed</span>
-                </div>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Studwork <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1428,12 +1369,6 @@ const SECTIONS_DATA = [
                 <div class="tile-icon"><i class="fa-solid fa-layer-group"></i></div>
                 <h3>Plywood & Structural Panels</h3>
                 <p>Hardwood-faced, marine grade, and softwood plywood sheets for structural sheathing, joinery, flat roofing, and flooring.</p>
-                <div class="category-pill-list">
-                    <span>Hardwood Plywood</span>
-                    <span>Marine Grade</span>
-                    <span>Shuttering Ply</span>
-                    <span>6mm to 25mm</span>
-                </div>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Plywood <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1443,12 +1378,6 @@ const SECTIONS_DATA = [
                 <div class="tile-icon"><i class="fa-solid fa-sheet-plastic"></i></div>
                 <h3>OSB3, MDF & Flooring</h3>
                 <p>Moisture-resistant OSB3 structural boards, MR moisture-resistant green core MDF, and tongue & groove P5 chipboard flooring.</p>
-                <div class="category-pill-list">
-                    <span>OSB3 Structural</span>
-                    <span>MR Green MDF</span>
-                    <span>P5 T&G Flooring</span>
-                    <span>Standard MDF</span>
-                </div>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Sheets <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
@@ -1595,22 +1524,14 @@ const SECTIONS_DATA = [
             <!-- Category 1: Cement Mixers -->
             <div class="machinery-card">
                 <div class="machinery-header-badge">
-                    <span><i class="fa-solid fa-certificate"></i> Authorised Belle Main Dealer</span>
+                    <span><i class="fa-solid fa-certificate"></i> Authorised Main Dealer</span>
                 </div>
                 <div class="machinery-visual">
                     <div class="machinery-icon-holder"><i class="fa-solid fa-gear fa-spin" style="--fa-animation-duration: 18s;"></i></div>
                     <h3>Cement & Concrete Mixers</h3>
-                    <span class="machinery-tagline">Belle Minimix 150 & Site Tip-Up Mixers</span>
                 </div>
                 <div class="machinery-details-body">
-                    <p>The UK contractor benchmark for concrete mixing. Built with reinforced drums, heavy-duty gearboxes, and barrow-height swivel tipping stands.</p>
-                    <div class="category-pill-list category-pill-list-dark">
-                        <span>Belle Minimix 150</span>
-                        <span>Honda GX120 Petrol</span>
-                        <span>110V Site Electric</span>
-                        <span>240V Mains</span>
-                        <span>Swivel Tipping Stands</span>
-                    </div>
+                    <p>The UK contractor benchmark for concrete mixing, with reinforced drums, heavy-duty gearboxes, and off-ground swivel tipping stands in petrol and electric options.</p>
                 </div>
                 <div class="machinery-footer">
                     <a href="#briants-quick-categories" class="cat-action-link cat-action-link-orange">Explore Mixers <i class="fa-solid fa-chevron-right"></i></a>
@@ -1620,21 +1541,14 @@ const SECTIONS_DATA = [
             <!-- Category 2: Cut-Off Saws -->
             <div class="machinery-card">
                 <div class="machinery-header-badge">
-                    <span><i class="fa-solid fa-shield-halved"></i> Authorised Stihl Main Dealer</span>
+                    <span><i class="fa-solid fa-shield-halved"></i> Authorised Main Dealer</span>
                 </div>
                 <div class="machinery-visual">
                     <div class="machinery-icon-holder"><i class="fa-solid fa-compact-disc"></i></div>
                     <h3>Cut-Off Saws & Disc Cutters</h3>
-                    <span class="machinery-tagline">Stihl TS 410 / TS 420 & Husqvarna Cutters</span>
                 </div>
                 <div class="machinery-details-body">
                     <p>High-torque 2-stroke petrol and cordless power cutters engineered for fast, precision slicing through concrete, blockwork, asphalt, and structural steel.</p>
-                    <div class="category-pill-list category-pill-list-dark">
-                        <span>Stihl TS 410 (300mm)</span>
-                        <span>Stihl TS 420 (350mm)</span>
-                        <span>Diamond Masonry Blades</span>
-                        <span>Water Suppression Tanks</span>
-                    </div>
                 </div>
                 <div class="machinery-footer">
                     <a href="#briants-quick-categories" class="cat-action-link cat-action-link-orange">Explore Cut-Off Saws <i class="fa-solid fa-chevron-right"></i></a>
@@ -1649,16 +1563,9 @@ const SECTIONS_DATA = [
                 <div class="machinery-visual">
                     <div class="machinery-icon-holder"><i class="fa-solid fa-wind"></i></div>
                     <h3>Wet & Dry Vacuum Cleaners</h3>
-                    <span class="machinery-tagline">M-Class & L-Class Site Dust Extractors</span>
                 </div>
                 <div class="machinery-details-body">
-                    <p>Heavy-duty site vacuums designed for hazardous silica concrete dust extraction, slurry clean-up, and automatic tool synchronisation.</p>
-                    <div class="category-pill-list category-pill-list-dark">
-                        <span>M-Class Silica Certified</span>
-                        <span>Auto Tool Take-Off</span>
-                        <span>Auto Filter Pulse Clean</span>
-                        <span>Wet Slurry Extraction</span>
-                    </div>
+                    <p>Heavy-duty site vacuums designed for hazardous silica concrete dust extraction, slurry clean-up, and automatic power-tool synchronisation.</p>
                 </div>
                 <div class="machinery-footer">
                     <a href="#briants-quick-categories" class="cat-action-link cat-action-link-orange">Explore Dust Vacuums <i class="fa-solid fa-chevron-right"></i></a>
