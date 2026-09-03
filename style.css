@@ -241,6 +241,68 @@
     }
 }
 
+/* Category Card Utilities */
+.category-pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.75rem 0 1.25rem 0;
+}
+
+.category-pill-list span {
+    background-color: var(--briants-bg-light);
+    border: 1px solid var(--briants-border);
+    color: var(--briants-text-dark);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--briants-radius-sm);
+    transition: var(--briants-transition);
+}
+
+.category-pill-list-dark span {
+    background-color: #0f172a;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+.cat-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--briants-primary);
+    text-decoration: none;
+    transition: var(--briants-transition);
+}
+
+.cat-action-link:hover {
+    color: var(--briants-primary-dark);
+    transform: translateX(3px);
+}
+
+.cat-action-link-orange {
+    color: var(--briants-safety-orange);
+}
+
+.cat-action-link-orange:hover {
+    color: #fb923c;
+}
+
+.cat-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background-color: var(--briants-tint-green);
+    color: var(--briants-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
 /* ==========================================================================
    3. Top Banner & Header
    ========================================================================== */
