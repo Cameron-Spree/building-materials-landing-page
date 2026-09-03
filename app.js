@@ -1,18 +1,28 @@
 // Briants Building Materials - Section Builder Dashboard Controller
 
-// State Management
-let activePageId = 'main-building'; // Default loaded page template ('main-building', 'machinery-spotlight', 'trade-heavy-side')
-let activeMode = 'isolate'; // 'isolate' or 'builder'
-let activeSectionId = 'top-banner'; // Default selected section in isolate mode
-let activeCodeTab = 'html'; // 'content', 'html', 'css', 'js', or 'global'
+// State Management with Local Storage Persistence
+let activePageId = localStorage.getItem('briants_active_page_id') || 'main-building';
+let activeMode = localStorage.getItem('briants_active_mode') || 'isolate'; // 'isolate' or 'builder'
+let activeSectionId = localStorage.getItem('briants_active_section_id') || 'quick-categories';
+let activeCodeTab = localStorage.getItem('briants_active_code_tab') || 'content'; // default to 'content' for quick editing
 let viewportWidth = '100%'; // '100%', '768px', '375px'
 let viewportDevice = 'desktop'; // 'desktop', 'tablet', 'mobile'
 
 // Clone sections from data (excluding base styles global section for builders)
 let builderSections = SECTIONS_DATA.filter(section => section.id !== 'global');
 
-// Selected section IDs for builder mode (all active by default)
-let selectedSectionIds = builderSections.map(s => s.id);
+// Selected section IDs for builder mode (all active by default or restored)
+let selectedSectionIds = [];
+try {
+    const savedSelected = localStorage.getItem('briants_selected_section_ids');
+    if (savedSelected) {
+        selectedSectionIds = JSON.parse(savedSelected);
+    } else {
+        selectedSectionIds = builderSections.map(s => s.id);
+    }
+} catch (e) {
+    selectedSectionIds = builderSections.map(s => s.id);
+}
 
 // DOM Elements
 let selectionListEl;
@@ -52,12 +62,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Dashboard UI
     init();
+    
+    // Save state on unload
+    window.addEventListener('beforeunload', () => {
+        saveDashboardState();
+    });
 });
 
 // Initial Setup
 function init() {
     populatePageTemplates();
-    loadPageTemplate(activePageId);
+    loadPageTemplate(activePageId, false);
+    
+    // Restore mode and tab buttons
+    document.getElementById('btn-mode-isolate').classList.toggle('active', activeMode === 'isolate');
+    document.getElementById('btn-mode-builder').classList.toggle('active', activeMode === 'builder');
+    
+    setCodeTab(activeCodeTab);
     
     // Automatically setup iframe interactivity once loaded
     previewIframeEl.addEventListener('load', () => {
@@ -72,6 +93,15 @@ function init() {
             }
         }
     });
+}
+
+// Save dashboard state to localStorage
+function saveDashboardState() {
+    localStorage.setItem('briants_active_page_id', activePageId);
+    localStorage.setItem('briants_active_mode', activeMode);
+    localStorage.setItem('briants_active_section_id', activeSectionId);
+    localStorage.setItem('briants_active_code_tab', activeCodeTab);
+    localStorage.setItem('briants_selected_section_ids', JSON.stringify(selectedSectionIds));
 }
 
 // --------------------------------------------------------------------------
@@ -98,9 +128,11 @@ function saveSectionHtmlLocally(sectionId, newHtml, shouldUpdateIframe = true) {
     if (!sectionId || sectionId === 'global') return;
     
     localStorage.setItem('briants_custom_html_' + sectionId, newHtml);
+    saveDashboardState();
     
     showSavedFeedback();
     updateSectionStatusUI();
+    renderSidebar();
     
     if (shouldUpdateIframe) {
         syncIframeBodyInPlace(newHtml);
@@ -131,8 +163,9 @@ function syncIframeBodyInPlace(newHtml) {
 function resetActiveSection() {
     if (!activeSectionId || activeSectionId === 'global') return;
     
-    if (confirm(`Reset the "${activeSectionId}" section to its default text and links?`)) {
+    if (confirm(`Reset the "${activeSectionId}" section back to its original template defaults?`)) {
         localStorage.removeItem('briants_custom_html_' + activeSectionId);
+        saveDashboardState();
         updateSectionStatusUI();
         updatePreview();
         updateCodeDisplay();
@@ -146,11 +179,75 @@ function resetAllCustomizations() {
         SECTIONS_DATA.forEach(sec => {
             localStorage.removeItem('briants_custom_html_' + sec.id);
         });
+        saveDashboardState();
         updateSectionStatusUI();
         updatePreview();
         updateCodeDisplay();
         renderSidebar();
     }
+}
+
+// Export a full JSON backup of all customized text & links
+function exportAllCustomizations() {
+    const backupData = {
+        app: 'Briants Building Materials Dashboard',
+        exportDate: new Date().toISOString(),
+        activePageId,
+        activeMode,
+        activeSectionId,
+        activeCodeTab,
+        selectedSectionIds,
+        customSections: {}
+    };
+
+    SECTIONS_DATA.forEach(sec => {
+        const customHtml = localStorage.getItem('briants_custom_html_' + sec.id);
+        if (customHtml) {
+            backupData.customSections[sec.id] = customHtml;
+        }
+    });
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `briants-building-materials-backup-${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+// Import JSON backup and restore all customized sections
+function importCustomizations(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.customSections) {
+                Object.keys(data.customSections).forEach(secId => {
+                    localStorage.setItem('briants_custom_html_' + secId, data.customSections[secId]);
+                });
+
+                if (data.activePageId) activePageId = data.activePageId;
+                if (data.activeSectionId) activeSectionId = data.activeSectionId;
+                if (data.activeMode) activeMode = data.activeMode;
+                if (data.activeCodeTab) activeCodeTab = data.activeCodeTab;
+
+                saveDashboardState();
+                loadPageTemplate(activePageId);
+                setCodeTab(activeCodeTab);
+                alert('Backup successfully restored! All your text and links have been loaded.');
+            } else {
+                alert('Invalid backup file format.');
+            }
+        } catch (err) {
+            alert('Failed to parse backup file: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // Reset input
 }
 
 // Flash green saved badge
@@ -192,6 +289,9 @@ function populatePageTemplates() {
         const option = document.createElement('option');
         option.value = template.id;
         option.textContent = template.name;
+        if (template.id === activePageId) {
+            option.selected = true;
+        }
         pageTemplateSelectEl.appendChild(option);
     });
 }
@@ -199,11 +299,12 @@ function populatePageTemplates() {
 // Switch between page templates from the UI dropdown
 function switchPageTemplate(pageId) {
     activePageId = pageId;
+    saveDashboardState();
     loadPageTemplate(pageId);
 }
 
 // Load a page template's sections, active check states, and order
-function loadPageTemplate(pageId) {
+function loadPageTemplate(pageId, resetSection = true) {
     const template = PAGE_TEMPLATES.find(p => p.id === pageId);
     if (!template) return;
     
@@ -220,16 +321,22 @@ function loadPageTemplate(pageId) {
     
     // Update builder bank to ONLY contain the template's sections
     builderSections = activeSections;
-    selectedSectionIds = builderSections.map(s => s.id);
     
-    // Set isolated focus to the page's first section if focus was lost or irrelevant
+    // If selectedSectionIds is empty, initialize with all
+    if (!selectedSectionIds || selectedSectionIds.length === 0) {
+        selectedSectionIds = builderSections.map(s => s.id);
+    }
+    
+    // Set isolated focus to activeSectionId if valid, else first section
     const currentIsActiveInTemplate = templateSectionIds.includes(activeSectionId);
-    if (!currentIsActiveInTemplate || activeSectionId === 'global') {
+    if ((!currentIsActiveInTemplate || activeSectionId === 'global') && resetSection) {
         const firstSec = templateSectionIds.find(id => id !== 'global');
         if (firstSec) {
             activeSectionId = firstSec;
         }
     }
+    
+    saveDashboardState();
     
     // Refresh all UI elements
     renderSidebar();
@@ -242,6 +349,7 @@ function loadPageTemplate(pageId) {
 function setMode(mode) {
     if (activeMode === mode) return;
     activeMode = mode;
+    saveDashboardState();
     
     // Toggle active tabs
     document.getElementById('btn-mode-isolate').classList.toggle('active', mode === 'isolate');
@@ -251,12 +359,11 @@ function setMode(mode) {
         modeDescEl.textContent = 'Select a section to isolate. Click directly on text/links in the preview or use the inspector below to edit & save.';
         btnSelectAllEl.style.display = 'none';
         btnClearAllEl.style.display = 'none';
-        if (activeCodeTab === 'global') activeCodeTab = 'html';
     } else {
         modeDescEl.textContent = 'Check building sections to combine them into a custom landing page. Arrange layout order with arrows.';
         btnSelectAllEl.style.display = 'flex';
         btnClearAllEl.style.display = 'flex';
-        if (activeCodeTab === 'content') activeCodeTab = 'html';
+        if (activeCodeTab === 'content') setCodeTab('html');
     }
     
     renderSidebar();
@@ -303,7 +410,7 @@ function createIsolateItem(section) {
     }
     
     const isCustom = isSectionCustomized(section.id);
-    const customBadge = isCustom ? `<span style="color:#22c55e; font-size:0.7rem; margin-right:0.35rem;" title="Custom text saved locally"><i class="fa-solid fa-pen-circle-check"></i></span>` : '';
+    const customBadge = isCustom ? `<span style="color:#22c55e; font-size:0.72rem; margin-right:0.4rem; font-weight:700;" title="Custom text and links saved in browser"><i class="fa-solid fa-circle-check"></i> Saved</span>` : '';
     
     li.innerHTML = `
         <label>
@@ -321,6 +428,7 @@ function createIsolateItem(section) {
         });
         li.classList.add('selected', 'active-preview');
         activeSectionId = section.id;
+        saveDashboardState();
         
         updatePreview();
         updateCodeDisplay();
@@ -339,10 +447,13 @@ function createBuilderItem(section, index) {
         li.classList.add('selected');
     }
     
+    const isCustom = isSectionCustomized(section.id);
+    const customBadge = isCustom ? `<span style="color:#22c55e; font-size:0.65rem; margin-left:0.35rem;" title="Has custom saved edits"><i class="fa-solid fa-circle-check"></i></span>` : '';
+    
     li.innerHTML = `
         <label onclick="toggleSectionSelection('${section.id}', event)">
             <input type="checkbox" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleSectionSelection('${section.id}')">
-            <span>${section.name}</span>
+            <span>${section.name}${customBadge}</span>
         </label>
         <div style="display: flex; gap: 0.35rem; padding-right: 0.75rem; align-items: center;">
             <button onclick="moveSection('${section.id}', -1, event)" class="action-icon-btn" style="width:24px; height:24px; font-size:0.65rem;" title="Move Up" ${index === 0 ? 'disabled' : ''}>
@@ -368,6 +479,7 @@ function toggleSectionSelection(id, event) {
         selectedSectionIds.splice(index, 1);
     }
     
+    saveDashboardState();
     renderSidebar();
     updatePreview();
     updateCodeDisplay();
@@ -388,6 +500,7 @@ function moveSection(id, direction, event) {
     builderSections[index] = builderSections[targetIndex];
     builderSections[targetIndex] = temp;
     
+    saveDashboardState();
     renderSidebar();
     updatePreview();
     updateCodeDisplay();
@@ -401,6 +514,7 @@ function selectAllSections(select) {
         selectedSectionIds = [];
     }
     
+    saveDashboardState();
     renderSidebar();
     updatePreview();
     updateCodeDisplay();
@@ -759,6 +873,7 @@ function setupIframeInteractivity() {
 // Switch code viewer tabs
 function setCodeTab(tab) {
     activeCodeTab = tab;
+    saveDashboardState();
     
     const tabContentBtn = document.getElementById('tab-btn-content');
     if (tabContentBtn) tabContentBtn.classList.toggle('active', tab === 'content');
@@ -768,7 +883,7 @@ function setCodeTab(tab) {
     document.getElementById('tab-btn-global').classList.toggle('active', tab === 'global');
     
     // Update toolbar copy button text
-    const copyBtn = document.querySelector('.sidebar-footer button');
+    const copyBtn = document.querySelector('.sidebar-footer .sb-btn-primary');
     if (copyBtn) {
         copyBtn.innerHTML = `<i class="fa-solid fa-copy"></i> Copy Active ${tab.toUpperCase()}`;
     }
@@ -886,8 +1001,10 @@ function renderContentInspector() {
     function applyInspectorChanges() {
         const updatedHtml = doc.body.innerHTML;
         localStorage.setItem('briants_custom_html_' + activeSectionId, updatedHtml);
+        saveDashboardState();
         showSavedFeedback();
         updateSectionStatusUI();
+        renderSidebar();
         syncIframeBodyInPlace(updatedHtml);
         if (codeOutputEl && activeCodeTab === 'html') {
             codeOutputEl.value = updatedHtml;
@@ -899,7 +1016,7 @@ function renderContentInspector() {
     headerInfo.className = 'inspector-header-info';
     headerInfo.innerHTML = `
         <h4><i class="fa-solid fa-cubes"></i> Category & Content Editor</h4>
-        <span>Edits update live in preview & save in your browser. Add or remove categories below.</span>
+        <span>Edits are saved automatically in your browser. Add or remove categories below.</span>
     `;
     contentInspectorEl.appendChild(headerInfo);
 

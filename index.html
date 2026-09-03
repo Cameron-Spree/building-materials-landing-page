@@ -938,6 +938,15 @@
             <button class="sb-btn sb-btn-primary" onclick="triggerCopyActiveCode()">
                 <i class="fa-solid fa-copy"></i> Copy Active HTML
             </button>
+            <div style="display: flex; gap: 0.4rem; width: 100%; margin-top: 0.25rem;">
+                <button class="sb-btn sb-btn-secondary" style="flex:1; font-size:0.75rem; padding: 0.5rem;" onclick="exportAllCustomizations()" title="Download a JSON backup of all your edited text and links">
+                    <i class="fa-solid fa-download"></i> Export Backup
+                </button>
+                <button class="sb-btn sb-btn-secondary" style="flex:1; font-size:0.75rem; padding: 0.5rem;" onclick="document.getElementById('import-file-input').click()" title="Restore an exported backup">
+                    <i class="fa-solid fa-upload"></i> Restore
+                </button>
+                <input type="file" id="import-file-input" accept=".json" style="display: none;" onchange="importCustomizations(event)">
+            </div>
         </div>
     </div>
 
