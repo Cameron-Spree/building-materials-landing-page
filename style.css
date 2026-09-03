@@ -1,0 +1,1601 @@
+/* ==========================================================================
+   Briants of Risborough - Master Building Materials & Machinery Stylesheet
+   Theme Version: 2.0.0
+   Author: Briants of Risborough / Cameron Spree
+   Description: Complete WordPress theme stylesheet for modular landing page components.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CSS Variables & Theme Foundations
+   ========================================================================== */
+
+:root {
+    --briants-primary: #005c30;         /* Deep Merchant Forest Green */
+    --briants-primary-hover: #004524;   /* Darker Forest Green */
+    --briants-accent: #d2a138;          /* Warm Trade Gold */
+    --briants-accent-hover: #b88a2f;    /* Darker Gold */
+    --briants-safety-orange: #f97316;   /* Construction Safety Accent */
+    --briants-text-dark: #0f172a;       /* Charcoal Slate */
+    --briants-text-muted: #64748b;      /* Muted Slate Text */
+    --briants-bg-light: #f8fafc;        /* Off-white / light slate background */
+    --briants-bg-white: #ffffff;
+    --briants-tint-green: #e9f3ef;      /* Soft forest green tint */
+    --briants-tint-gold: #fdf8eb;       /* Soft gold highlight */
+    --briants-border: #e2e8f0;          /* Clean border outline */
+    --briants-border-dark: #cbd5e1;
+    
+    --briants-font-headings: 'Poppins', sans-serif;
+    --briants-font-body: 'Libre Franklin', sans-serif;
+    
+    --briants-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --briants-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    --briants-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+    --briants-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+    
+    --briants-radius-sm: 0.375rem;
+    --briants-radius-md: 0.5rem;
+    --briants-radius-lg: 0.75rem;
+    --briants-radius-xl: 1rem;
+    
+    --briants-transition: all 0.25s ease;
+}
+
+/* ==========================================================================
+   2. Base Resets & Layout System
+   ========================================================================== */
+
+.briants-module {
+    font-family: var(--briants-font-body);
+    color: var(--briants-text-dark);
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+.briants-module *, 
+.briants-module *::before, 
+.briants-module *::after {
+    box-sizing: inherit;
+}
+
+.briants-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+}
+
+/* Button System */
+.briants-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    font-family: var(--briants-font-headings);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 0.75rem 1.6rem;
+    border-radius: var(--briants-radius-sm);
+    transition: var(--briants-transition);
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.briants-btn-lg {
+    padding: 0.95rem 2rem;
+    font-size: 1.02rem;
+}
+
+.briants-btn-sm {
+    padding: 0.45rem 1.1rem;
+    font-size: 0.82rem;
+}
+
+.briants-btn-primary {
+    background-color: var(--briants-primary);
+    color: var(--briants-bg-white);
+}
+
+.briants-btn-primary:hover {
+    background-color: var(--briants-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 92, 48, 0.3);
+}
+
+.briants-btn-secondary {
+    background-color: var(--briants-accent);
+    color: var(--briants-bg-white);
+}
+
+.briants-btn-secondary:hover {
+    background-color: var(--briants-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(210, 161, 56, 0.3);
+}
+
+.briants-btn-orange {
+    background-color: var(--briants-safety-orange);
+    color: var(--briants-bg-white);
+}
+
+.briants-btn-orange:hover {
+    background-color: #ea580c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35);
+}
+
+.briants-btn-outline {
+    background-color: transparent;
+    color: var(--briants-primary);
+    border-color: var(--briants-primary);
+}
+
+.briants-btn-outline:hover {
+    background-color: var(--briants-primary);
+    color: var(--briants-bg-white);
+}
+
+.briants-btn-outline-white {
+    background-color: transparent;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.briants-btn-outline-white:hover {
+    background-color: #ffffff;
+    color: var(--briants-primary);
+    border-color: #ffffff;
+}
+
+/* Headers */
+.briants-section-header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 3rem auto;
+}
+
+.briants-section-subtitle {
+    display: inline-block;
+    color: var(--briants-accent);
+    font-family: var(--briants-font-headings);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+    background-color: var(--briants-tint-gold);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(210, 161, 56, 0.25);
+}
+
+.briants-section-header h2 {
+    font-family: var(--briants-font-headings);
+    font-weight: 700;
+    font-size: 2.15rem;
+    color: var(--briants-text-dark);
+    margin: 0.5rem 0 0.75rem 0;
+    line-height: 1.25;
+}
+
+.briants-section-header p {
+    color: var(--briants-text-muted);
+    font-size: 1.05rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Grids */
+.briants-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+}
+
+.briants-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+}
+
+.briants-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.briants-grid-6 {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+    .briants-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .briants-grid-6 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .briants-grid-2,
+    .briants-grid-3 {
+        grid-template-columns: 1fr;
+    }
+    .briants-grid-4 {
+        grid-template-columns: 1fr;
+    }
+    .briants-grid-6 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .briants-section-header h2 {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .briants-grid-6 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   3. Top Banner & Header
+   ========================================================================== */
+
+#briants-top-banner {
+    background-color: var(--briants-primary);
+    color: var(--briants-bg-white);
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+#briants-top-banner .top-banner-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+}
+
+#briants-top-banner a {
+    color: var(--briants-bg-white);
+    text-decoration: none;
+    transition: var(--briants-transition);
+}
+
+#briants-top-banner a:hover {
+    color: var(--briants-accent);
+    text-decoration: underline;
+}
+
+#briants-top-banner .top-banner-divider {
+    opacity: 0.35;
+}
+
+#briants-header {
+    background-color: var(--briants-bg-white);
+    border-bottom: 1px solid var(--briants-border);
+    padding: 1.25rem 0;
+}
+
+#briants-header .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+}
+
+#briants-header .brand-badge-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+#briants-header .brand-title {
+    font-family: var(--briants-font-headings);
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--briants-primary);
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+}
+
+#briants-header .brand-sub {
+    font-family: var(--briants-font-headings);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--briants-accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+#briants-header .header-info-grid {
+    display: flex;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+}
+
+#briants-header .header-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+}
+
+#briants-header .header-info-item i {
+    font-size: 1.25rem;
+    color: var(--briants-primary);
+}
+
+#briants-header .header-info-item strong {
+    display: block;
+    color: var(--briants-text-dark);
+}
+
+#briants-header .header-info-item span {
+    color: var(--briants-text-muted);
+}
+
+/* ==========================================================================
+   4. Hero Sections
+   ========================================================================== */
+
+#briants-hero {
+    position: relative;
+    background-image: url('./briants_hero_bg.png');
+    background-size: cover;
+    background-position: center;
+    color: var(--briants-bg-white);
+    padding: 6.5rem 0;
+    display: flex;
+    align-items: center;
+    min-height: 600px;
+}
+
+#briants-hero .hero-bg-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to right, rgba(0, 60, 31, 0.95) 0%, rgba(0, 75, 38, 0.88) 45%, rgba(0, 92, 48, 0.3) 100%);
+    z-index: 1;
+}
+
+#briants-hero .hero-inner {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+#briants-hero .hero-card {
+    max-width: 680px;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 2.75rem;
+    border-radius: var(--briants-radius-lg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+#briants-hero .hero-badge-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+#briants-hero .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+#briants-hero .hero-badge-gold {
+    background: rgba(210, 161, 56, 0.25);
+    color: #ffd875;
+    border-color: rgba(210, 161, 56, 0.4);
+}
+
+#briants-hero h1 {
+    font-family: var(--briants-font-headings);
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 1.2rem 0;
+    color: #ffffff;
+}
+
+#briants-hero .hero-highlight {
+    color: #f7cb68;
+    display: block;
+}
+
+#briants-hero .hero-desc {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    margin: 0 0 1.75rem 0;
+}
+
+#briants-hero .hero-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+#briants-hero .hero-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: #f1f5f9;
+}
+
+#briants-hero .hero-list i {
+    color: #4ade80;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+#briants-hero .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   5. Promo & Navigation Components
+   ========================================================================== */
+
+#briants-trade-promo {
+    background-color: var(--briants-tint-gold);
+    border-bottom: 1px solid rgba(210, 161, 56, 0.3);
+    padding: 1.25rem 1rem;
+}
+
+#briants-trade-promo .trade-promo-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+}
+
+#briants-trade-promo .trade-promo-col {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+#briants-trade-promo .trade-promo-col i {
+    font-size: 1.75rem;
+    color: var(--briants-accent);
+}
+
+#briants-trade-promo .trade-promo-col strong {
+    display: block;
+    font-family: var(--briants-font-headings);
+    font-size: 0.95rem;
+    color: var(--briants-text-dark);
+}
+
+#briants-trade-promo .trade-promo-col span {
+    font-size: 0.8rem;
+    color: var(--briants-text-muted);
+}
+
+#briants-quick-categories {
+    background-color: var(--briants-bg-white);
+}
+
+.quick-cat-card {
+    background-color: var(--briants-bg-light);
+    border: 1px solid var(--briants-border);
+    border-radius: var(--briants-radius-md);
+    padding: 1.5rem 1.15rem;
+    text-decoration: none;
+    color: var(--briants-text-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: var(--briants-transition);
+    position: relative;
+}
+
+.quick-cat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--briants-shadow-lg);
+    border-color: var(--briants-primary);
+    background-color: #ffffff;
+}
+
+.quick-cat-featured {
+    border-color: rgba(249, 115, 22, 0.4);
+    background-color: #fff7ed;
+}
+
+.quick-cat-featured:hover {
+    border-color: var(--briants-safety-orange);
+}
+
+.feat-pill {
+    position: absolute;
+    top: -10px;
+    background-color: var(--briants-safety-orange);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+}
+
+.quick-cat-card .cat-icon-box {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background-color: var(--briants-tint-green);
+    color: var(--briants-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    transition: var(--briants-transition);
+}
+
+.quick-cat-featured .cat-icon-box {
+    background-color: #ffedd5;
+    color: var(--briants-safety-orange);
+}
+
+.quick-cat-card:hover .cat-icon-box {
+    background-color: var(--briants-primary);
+    color: #ffffff;
+    transform: scale(1.08);
+}
+
+.quick-cat-featured:hover .cat-icon-box {
+    background-color: var(--briants-safety-orange);
+    color: #ffffff;
+}
+
+.quick-cat-card h3 {
+    font-family: var(--briants-font-headings);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 0.45rem 0;
+    color: var(--briants-text-dark);
+}
+
+.quick-cat-card p {
+    font-size: 0.82rem;
+    color: var(--briants-text-muted);
+    margin: 0 0 1rem 0;
+    line-height: 1.45;
+    flex-grow: 1;
+}
+
+.quick-cat-card .cat-link {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--briants-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* ==========================================================================
+   6. Bricks, Blocks, Insulation & Timber Styles
+   ========================================================================== */
+
+#briants-bricks-blocks {
+    background-color: var(--briants-bg-light);
+}
+
+.product-tile {
+    background-color: var(--briants-bg-white);
+    border: 1px solid var(--briants-border);
+    border-radius: var(--briants-radius-md);
+    padding: 1.75rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: var(--briants-transition);
+}
+
+.product-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--briants-shadow-lg);
+    border-color: var(--briants-border-dark);
+}
+
+.tile-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background-color: var(--briants-tint-green);
+    color: var(--briants-primary);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--briants-radius-sm);
+}
+
+.tile-icon {
+    font-size: 2rem;
+    color: var(--briants-primary);
+    margin-bottom: 0.75rem;
+}
+
+.product-tile h3 {
+    font-family: var(--briants-font-headings);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--briants-text-dark);
+    margin: 0 0 0.35rem 0;
+}
+
+.tile-spec {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--briants-accent);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.product-tile p {
+    font-size: 0.88rem;
+    color: var(--briants-text-muted);
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+}
+
+.tile-points {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--briants-text-dark);
+}
+
+.tile-points i {
+    color: var(--briants-primary);
+    margin-right: 0.4rem;
+}
+
+.tile-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--briants-border);
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.price-hint {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--briants-text-muted);
+    text-transform: uppercase;
+}
+
+.brick-match-box {
+    margin-top: 2.5rem;
+    background-color: #ffffff;
+    border: 2px dashed rgba(0, 92, 48, 0.3);
+    border-radius: var(--briants-radius-lg);
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.brick-match-box .match-text {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    max-width: 700px;
+}
+
+.brick-match-box i {
+    font-size: 2.5rem;
+    color: var(--briants-primary);
+    flex-shrink: 0;
+}
+
+.brick-match-box h3 {
+    font-family: var(--briants-font-headings);
+    font-size: 1.2rem;
+    margin: 0 0 0.25rem 0;
+    color: var(--briants-text-dark);
+}
+
+.brick-match-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--briants-text-muted);
+}
+
+#briants-insulation {
+    background-color: var(--briants-bg-white);
+}
+
+.insulation-card {
+    background-color: var(--briants-bg-light);
+    border: 1px solid var(--briants-border);
+    border-radius: var(--briants-radius-md);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: var(--briants-transition);
+}
+
+.insulation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--briants-shadow-lg);
+    border-color: var(--briants-primary);
+}
+
+.insulation-header {
+    background-color: var(--briants-tint-green);
+    padding: 1.5rem 1.5rem 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 92, 48, 0.15);
+}
+
+.ins-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--briants-primary);
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.insulation-header h3 {
+    font-family: var(--briants-font-headings);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--briants-text-dark);
+    margin: 0 0 0.25rem 0;
+}
+
+.ins-dims {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--briants-text-muted);
+    margin: 0;
+}
+
+.insulation-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+
+.insulation-body p {
+    font-size: 0.88rem;
+    color: var(--briants-text-muted);
+    line-height: 1.5;
+    margin: 0 0 1.25rem 0;
+}
+
+.thickness-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+
+.thickness-pills span {
+    background-color: #ffffff;
+    border: 1px solid var(--briants-border-dark);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--briants-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--briants-text-dark);
+}
+
+.ins-specs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.84rem;
+    color: var(--briants-text-dark);
+}
+
+.ins-specs i {
+    color: var(--briants-primary);
+    margin-right: 0.4rem;
+}
+
+.insulation-cta {
+    padding: 1.25rem 1.5rem;
+    background-color: #ffffff;
+    border-top: 1px solid var(--briants-border);
+}
+
+#briants-timber {
+    background-color: var(--briants-bg-light);
+}
+
+.timber-panel {
+    background-color: var(--briants-bg-white);
+    border: 1px solid var(--briants-border);
+    border-radius: var(--briants-radius-md);
+    padding: 2rem;
+    box-shadow: var(--briants-shadow-sm);
+}
+
+.panel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--briants-primary);
+    background-color: var(--briants-tint-green);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--briants-radius-sm);
+    margin-bottom: 0.75rem;
+}
+
+.timber-panel h3 {
+    font-family: var(--briants-font-headings);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--briants-text-dark);
+    margin: 0 0 0.5rem 0;
+}
+
+.timber-panel p {
+    font-size: 0.9rem;
+    color: var(--briants-text-muted);
+    margin: 0 0 1.25rem 0;
+    line-height: 1.5;
+}
+
+.timber-table-wrap {
+    overflow-x: auto;
+}
+
+.timber-spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.timber-spec-table th {
+    background-color: #f1f5f9;
+    padding: 0.65rem 0.75rem;
+    color: var(--briants-text-dark);
+    font-weight: 700;
+    border-bottom: 2px solid var(--briants-border);
+    font-family: var(--briants-font-headings);
+}
+
+.timber-spec-table td {
+    padding: 0.7rem 0.75rem;
+    border-bottom: 1px solid var(--briants-border);
+    color: #334155;
+}
+
+.timber-spec-table tr:hover td {
+    background-color: #f8fafc;
+}
+
+.timber-extra-info {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.extra-item {
+    background-color: #ffffff;
+    border: 1px solid var(--briants-border);
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--briants-radius-md);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.88rem;
+    color: var(--briants-text-dark);
+}
+
+.extra-item i {
+    font-size: 1.6rem;
+    color: var(--briants-accent);
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   7. Construction Machinery & Workshop Styles
+   ========================================================================== */
+
+#briants-machinery {
+    background-color: #0b1329;
+    color: #ffffff;
+}
+
+#briants-machinery .briants-section-header h2 {
+    color: #ffffff;
+}
+
+#briants-machinery .briants-section-header p {
+    color: #94a3b8;
+}
+
+.machinery-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.machinery-card {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: var(--briants-radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: var(--briants-transition);
+}
+
+.machinery-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--briants-safety-orange);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.machinery-header-badge {
+    background-color: #0f172a;
+    padding: 0.65rem 1.25rem;
+    border-bottom: 1px solid #334155;
+}
+
+.machinery-header-badge span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--briants-safety-orange);
+    letter-spacing: 0.08em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.machinery-visual {
+    padding: 1.75rem 1.5rem 1.25rem 1.5rem;
+    background: linear-gradient(180deg, rgba(249, 115, 22, 0.08) 0%, transparent 100%);
+    border-bottom: 1px solid #334155;
+}
+
+.machinery-icon-holder {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background-color: rgba(249, 115, 22, 0.15);
+    color: var(--briants-safety-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.machinery-visual h3 {
+    font-family: var(--briants-font-headings);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.35rem 0;
+}
+
+.machinery-tagline {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    font-weight: 600;
+    display: block;
+}
+
+.machinery-details-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+
+.machinery-details-body p {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0 0 1.25rem 0;
+}
+
+.machinery-feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: 0.84rem;
+    color: #e2e8f0;
+}
+
+.machinery-feature-list i {
+    color: #4ade80;
+    margin-right: 0.45rem;
+}
+
+.machinery-footer {
+    padding: 1.25rem 1.5rem;
+    background-color: #0f172a;
+    border-top: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.machinery-footer .price-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.machinery-footer .price-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.machinery-footer .price-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.machinery-trust-strip {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: var(--briants-radius-md);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.trust-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+.trust-pill i {
+    color: var(--briants-safety-orange);
+    font-size: 1.1rem;
+}
+
+/* Workshop */
+#briants-workshop {
+    background-color: var(--briants-bg-white);
+}
+
+.workshop-wrapper {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    border-radius: var(--briants-radius-xl);
+    padding: 3.5rem 3rem;
+    box-shadow: var(--briants-shadow-xl);
+}
+
+.workshop-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--briants-accent);
+    background: rgba(210, 161, 56, 0.15);
+    padding: 0.3rem 0.85rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(210, 161, 56, 0.3);
+    margin-bottom: 1rem;
+}
+
+.workshop-content h2 {
+    font-family: var(--briants-font-headings);
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: #ffffff;
+    line-height: 1.25;
+}
+
+.workshop-content p {
+    font-size: 1.05rem;
+    color: #cbd5e1;
+    line-height: 1.65;
+    max-width: 850px;
+    margin: 0 0 2rem 0;
+}
+
+.workshop-services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem 2rem;
+    margin-bottom: 2.25rem;
+}
+
+.service-check {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.95rem;
+    color: #f1f5f9;
+}
+
+.service-check i {
+    color: var(--briants-accent);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.workshop-cta-row {
+    display: flex;
+    gap: 1rem;
+}
+
+/* ==========================================================================
+   8. Deals, Form, FAQ, Showroom & Footer
+   ========================================================================== */
+
+#briants-materials-deals {
+    background-color: var(--briants-bg-white);
+}
+
+.deal-card {
+    background-color: var(--briants-bg-light);
+    border: 1px solid var(--briants-border);
+    border-radius: var(--briants-radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: var(--briants-transition);
+}
+
+.deal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--briants-shadow-lg);
+    border-color: var(--briants-accent);
+}
+
+.deal-ribbon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--briants-accent);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--briants-radius-sm);
+}
+
+.deal-image-ph {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--briants-tint-green);
+    color: var(--briants-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.deal-card h3 {
+    font-family: var(--briants-font-headings);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--briants-text-dark);
+    margin: 0 0 0.35rem 0;
+}
+
+.deal-sub {
+    font-size: 0.78rem;
+    color: var(--briants-accent);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.deal-card p {
+    font-size: 0.85rem;
+    color: var(--briants-text-muted);
+    line-height: 1.5;
+    margin: 0 0 1.25rem 0;
+    flex-grow: 1;
+}
+
+.deal-footer {
+    border-top: 1px solid var(--briants-border);
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.deal-stock-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* FAQ */
+#briants-faq {
+    background-color: var(--briants-bg-light);
+}
+
+.faq-accordion-list {
+    max-width: 850px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item {
+    background-color: var(--briants-bg-white);
+    border: 1px solid var(--briants-border);
+    border-radius: var(--briants-radius-md);
+    overflow: hidden;
+    transition: var(--briants-transition);
+}
+
+.faq-item.active {
+    border-color: var(--briants-primary);
+    box-shadow: var(--briants-shadow-md);
+}
+
+.faq-question {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    font-family: var(--briants-font-headings);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--briants-text-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    gap: 1rem;
+    transition: var(--briants-transition);
+}
+
+.faq-question:hover {
+    color: var(--briants-primary);
+}
+
+.faq-question i {
+    font-size: 0.9rem;
+    color: var(--briants-accent);
+    transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #fafbfc;
+}
+
+.faq-answer p {
+    padding: 0 1.5rem 1.25rem 1.5rem;
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--briants-text-muted);
+    line-height: 1.65;
+}
+
+/* Showroom */
+#briants-showroom {
+    background-color: var(--briants-bg-white);
+}
+
+.showroom-card-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.showroom-details h2 {
+    font-family: var(--briants-font-headings);
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--briants-text-dark);
+    margin: 0.5rem 0 1rem 0;
+    line-height: 1.25;
+}
+
+.showroom-details p {
+    font-size: 1rem;
+    color: var(--briants-text-muted);
+    line-height: 1.6;
+    margin: 0 0 2rem 0;
+}
+
+.showroom-info-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.show-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.show-item i {
+    font-size: 1.4rem;
+    color: var(--briants-primary);
+    background-color: var(--briants-tint-green);
+    padding: 0.75rem;
+    border-radius: var(--briants-radius-sm);
+    flex-shrink: 0;
+}
+
+.show-item strong {
+    display: block;
+    font-family: var(--briants-font-headings);
+    font-size: 0.95rem;
+    color: var(--briants-text-dark);
+    margin-bottom: 0.2rem;
+}
+
+.show-item span {
+    font-size: 0.9rem;
+    color: var(--briants-text-muted);
+    line-height: 1.45;
+}
+
+.show-item a {
+    color: var(--briants-primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.showroom-btn-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.showroom-yard-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.yard-stat-box {
+    background-color: var(--briants-bg-light);
+    border: 1px solid var(--briants-border);
+    border-radius: var(--briants-radius-md);
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    transition: var(--briants-transition);
+}
+
+.yard-stat-box:hover {
+    transform: translateY(-4px);
+    border-color: var(--briants-primary);
+    box-shadow: var(--briants-shadow-md);
+}
+
+.stat-number {
+    font-family: var(--briants-font-headings);
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--briants-primary);
+    margin-bottom: 0.35rem;
+}
+
+.stat-label {
+    font-size: 0.82rem;
+    color: var(--briants-text-muted);
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+/* Footer */
+#briants-footer {
+    background-color: #0b1329;
+    color: #94a3b8;
+    border-top: 1px solid #1e293b;
+}
+
+#briants-footer .footer-top {
+    padding: 4rem 0 3rem 0;
+}
+
+#briants-footer .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 2.5rem;
+}
+
+.footer-col-brand .footer-logo-text {
+    font-family: var(--briants-font-headings);
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.06em;
+    display: block;
+    line-height: 1;
+}
+
+.footer-col-brand .footer-logo-sub {
+    font-family: var(--briants-font-headings);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--briants-accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.footer-col-brand p {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin: 0 0 1.5rem 0;
+}
+
+.footer-social-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.footer-social-row a {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #1e293b;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--briants-transition);
+}
+
+.footer-social-row a:hover {
+    background-color: var(--briants-primary);
+    transform: translateY(-2px);
+}
+
+.footer-col h4 {
+    font-family: var(--briants-font-headings);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 1.25rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.footer-col ul li a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: var(--briants-transition);
+}
+
+.footer-col ul li a:hover {
+    color: #ffffff;
+    padding-left: 4px;
+}
+
+#briants-footer .footer-bottom {
+    background-color: #070b16;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#briants-footer .footer-bottom-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.8rem;
+}
+
+#briants-footer .footer-bottom-inner p {
+    margin: 0;
+}
+
+.footer-payment-badges {
+    display: flex;
+    gap: 1.25rem;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+}

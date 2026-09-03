@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Briants of Risborough - Building Materials Section Builder & Testing Dashboard</title>
+    
+    <!-- Fonts for Dashboard and Previews -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Poppins:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Dashboard specific styling -->
+    <style>
+        :root {
+            --db-primary: #005c30;
+            --db-primary-hover: #004524;
+            --db-accent: #d2a138;
+            --db-safety-orange: #f97316;
+            --db-dark-bg: #0f172a;
+            --db-sidebar-bg: #1e293b;
+            --db-border: #334155;
+            --db-light-bg: #f8fafc;
+            --db-text-dark: #0f172a;
+            --db-text-light: #94a3b8;
+            --db-card-bg: #ffffff;
+            --db-btn-bg: #334155;
+            --db-font: 'Poppins', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--db-light-bg);
+            color: #334155;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Dashboard Sidebar --- */
+        .sidebar {
+            width: 350px;
+            background-color: var(--db-sidebar-bg);
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--db-border);
+            flex-shrink: 0;
+            z-index: 10;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed {
+            margin-left: -350px !important;
+        }
+
+        .sidebar-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--db-border);
+            background-color: var(--db-dark-bg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header i {
+            color: var(--db-accent);
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #ffffff;
+        }
+
+        .sidebar-header span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--db-text-light);
+            font-weight: 400;
+            margin-top: 0.1rem;
+        }
+
+        /* Page Selector Styling */
+        .page-selector-container {
+            padding: 1rem;
+            border-bottom: 1px solid var(--db-border);
+            background-color: var(--db-dark-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .page-selector-container label {
+            font-size: 0.7rem;
+            color: var(--db-text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            padding: 0.55rem 2rem 0.55rem 0.75rem;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--db-border);
+            border-radius: 4px;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.825rem;
+            font-weight: 500;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--db-primary);
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .select-wrapper select option {
+            background-color: var(--db-sidebar-bg);
+            color: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--db-text-light);
+            pointer-events: none;
+            font-size: 0.7rem;
+        }
+
+        /* Mode Selectors */
+        .mode-tabs {
+            display: flex;
+            background-color: var(--db-dark-bg);
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--db-border);
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--db-text-light);
+            padding: 0.6rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .mode-btn.active {
+            background-color: var(--db-primary);
+            color: #ffffff;
+        }
+
+        .mode-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        /* Section Checklist Area */
+        .sections-list-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .list-desc {
+            font-size: 0.75rem;
+            color: var(--db-text-light);
+            margin-bottom: 1rem;
+            padding: 0 0.25rem;
+            line-height: 1.4;
+        }
+
+        .selection-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .selection-item {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+
+        .selection-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .selection-item.selected {
+            background-color: rgba(0, 92, 48, 0.18);
+            border-color: var(--db-primary);
+        }
+
+        .selection-item.active-preview {
+            border-left: 4px solid var(--db-accent);
+        }
+
+        .selection-item label {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            gap: 0.75rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .selection-item input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: var(--db-primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .selection-item .item-meta {
+            margin-left: auto;
+            font-size: 0.65rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--db-text-light);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .selection-item.selected .item-meta {
+            background-color: var(--db-primary);
+            color: #ffffff;
+        }
+
+        /* Sidebar footer controls */
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--db-border);
+            background-color: var(--db-dark-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .sb-btn {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 4px;
+            font-family: var(--db-font);
+            font-weight: 600;
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .sb-btn-primary {
+            background-color: var(--db-primary);
+            color: #ffffff;
+        }
+
+        .sb-btn-primary:hover {
+            background-color: var(--db-primary-hover);
+        }
+
+        .sb-btn-secondary {
+            background-color: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+        }
+
+        .sb-btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        /* --- Main Workspace --- */
+        .workspace {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Viewport and Toolbar */
+        .toolbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .toolbar-title h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--db-dark-bg);
+        }
+
+        .toolbar-title span {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .viewport-controls {
+            display: flex;
+            background-color: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 6px;
+            gap: 0.25rem;
+        }
+
+        .vp-btn {
+            background: transparent;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .vp-btn.active {
+            background-color: #ffffff;
+            color: var(--db-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-icon-btn {
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-icon-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--db-primary);
+        }
+
+        /* --- Live Preview Panel --- */
+        .preview-panel {
+            flex-grow: 1;
+            background-color: #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            padding: 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border: 1px solid #94a3b8;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* --- Code Console Area --- */
+        .code-console {
+            height: 340px;
+            background-color: var(--db-dark-bg);
+            border-top: 1px solid var(--db-border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: relative;
+            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .code-console.collapsed {
+            height: 0px !important;
+            overflow: hidden;
+            border-top: none !important;
+        }
+
+        .console-header {
+            display: flex;
+            background-color: #0b0f19;
+            border-bottom: 1px solid var(--db-border);
+            padding: 0 1rem;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .console-tabs {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .console-tab {
+            background: transparent;
+            border: none;
+            color: var(--db-text-light);
+            padding: 0.75rem 1.25rem;
+            font-family: var(--db-font);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .console-tab.active {
+            color: var(--db-accent);
+            border-bottom-color: var(--db-accent);
+        }
+
+        .console-tab:hover:not(.active) {
+            color: #ffffff;
+        }
+
+        .console-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .copy-feedback {
+            font-size: 0.75rem;
+            color: #22c55e;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        .btn-copy {
+            background-color: var(--db-primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy:hover {
+            background-color: var(--db-primary-hover);
+        }
+
+        .console-toggle-btn {
+            background-color: #334155;
+            border: 1px solid #475569;
+            color: var(--db-text-light);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .console-toggle-btn:hover {
+            background-color: #475569;
+            color: #ffffff;
+        }
+
+        .console-body {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #0b0f19;
+        }
+
+        .code-textarea {
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            border: none;
+            color: #38bdf8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            padding: 1.25rem;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+            overflow-y: auto;
+            white-space: pre;
+        }
+
+        /* WordPress Tips Panel */
+        .wp-tips-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 320px;
+            background-color: var(--db-sidebar-bg);
+            border-left: 1px solid var(--db-border);
+            padding: 1.25rem;
+            overflow-y: auto;
+            color: #e2e8f0;
+            font-size: 0.78rem;
+            z-index: 5;
+        }
+
+        .wp-tips-panel h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--db-accent);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .wp-tips-panel p {
+            color: var(--db-text-light);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .wp-tips-panel ul {
+            padding-left: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        .wp-tips-panel li {
+            line-height: 1.4;
+        }
+
+        .wp-tips-panel code {
+            font-family: 'Fira Code', monospace;
+            background-color: var(--db-dark-bg);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            color: #f472b6;
+            font-size: 0.7rem;
+        }
+
+        /* Toggle & Restore Button Styles */
+        .sidebar-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--db-text-light);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.35rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-left: auto;
+        }
+
+        .sidebar-toggle-btn:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .restore-sidebar-btn,
+        .restore-console-btn {
+            position: fixed;
+            bottom: 20px;
+            z-index: 999;
+            background-color: var(--db-sidebar-bg);
+            color: #ffffff;
+            border: 1px solid var(--db-border);
+            border-radius: 6px;
+            padding: 0.65rem 1.1rem;
+            font-family: var(--db-font);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.2s ease;
+        }
+
+        .restore-sidebar-btn { left: 20px; }
+        .restore-console-btn { right: 20px; }
+
+        .restore-sidebar-btn:hover,
+        .restore-console-btn:hover {
+            background-color: var(--db-primary);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating panel restoration buttons -->
+    <button id="btn-restore-sidebar" class="restore-sidebar-btn" onclick="toggleSidebar(false)" style="display: none;" title="Expand Sidebar">
+        <i class="fa-solid fa-bars"></i> Show Sidebar
+    </button>
+    <button id="btn-restore-console" class="restore-console-btn" onclick="toggleConsole(false)" style="display: none;" title="Expand Code Console">
+        <i class="fa-solid fa-code"></i> Show Code Console
+    </button>
+
+    <!-- Left Sidebar Control Panel -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-trowel-bricks"></i>
+            <div>
+                <h1>Briants Builder</h1>
+                <span>Building Materials Dashboard</span>
+            </div>
+            <button id="btn-toggle-sidebar" class="sidebar-toggle-btn" onclick="toggleSidebar(true)" title="Hide Sidebar">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <!-- Page Template Selector -->
+        <div class="page-selector-container">
+            <label for="page-template-select">Active Page Template:</label>
+            <div class="select-wrapper">
+                <select id="page-template-select" onchange="switchPageTemplate(this.value)">
+                    <!-- Options populated dynamically by app.js -->
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+        </div>
+
+        <!-- Mode Select Tab Panel -->
+        <div class="mode-tabs">
+            <button id="btn-mode-isolate" class="mode-btn active" onclick="setMode('isolate')">
+                <i class="fa-solid fa-expand"></i> Isolated View
+            </button>
+            <button id="btn-mode-builder" class="mode-btn" onclick="setMode('builder')">
+                <i class="fa-solid fa-list-check"></i> Page Builder
+            </button>
+        </div>
+
+        <!-- Section List with Checklist selection -->
+        <div class="sections-list-container">
+            <p id="mode-desc" class="list-desc">
+                Select a single section below to isolate and view its dedicated HTML, CSS, and JS.
+            </p>
+            <ul id="selection-list" class="selection-list">
+                <!-- Javascript will populate this list dynamically -->
+            </ul>
+        </div>
+
+        <!-- Sidebar Actions & Export controls -->
+        <div class="sidebar-footer">
+            <button id="btn-select-all" class="sb-btn sb-btn-secondary" style="display: none;" onclick="selectAllSections(true)">
+                <i class="fa-solid fa-check-double"></i> Select All
+            </button>
+            <button id="btn-clear-all" class="sb-btn sb-btn-secondary" style="display: none;" onclick="selectAllSections(false)">
+                <i class="fa-solid fa-eraser"></i> Clear All
+            </button>
+            <button class="sb-btn sb-btn-primary" onclick="triggerCopyActiveCode()">
+                <i class="fa-solid fa-copy"></i> Copy Active HTML
+            </button>
+        </div>
+    </div>
+
+    <!-- Right Workspace Area -->
+    <div class="workspace">
+        
+        <!-- Workspace Top Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-title">
+                <h2 id="active-title">Global Styles & Resets</h2>
+                <span id="active-category">Category: Base Styles</span>
+            </div>
+
+            <!-- Viewport Resizer controls -->
+            <div class="viewport-controls">
+                <button id="btn-vp-desktop" class="vp-btn active" onclick="setViewport(100, 'desktop')">
+                    <i class="fa-solid fa-desktop"></i> Desktop
+                </button>
+                <button id="btn-vp-tablet" class="vp-btn" onclick="setViewport(768, 'tablet')">
+                    <i class="fa-solid fa-tablet-screen-button"></i> Tablet
+                </button>
+                <button id="btn-vp-mobile" class="vp-btn" onclick="setViewport(375, 'mobile')">
+                    <i class="fa-solid fa-mobile-screen-button"></i> Mobile
+                </button>
+            </div>
+
+            <!-- Custom Workspace buttons -->
+            <div class="preview-actions">
+                <button class="action-icon-btn" title="Refresh Live Preview" onclick="refreshPreview()">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+                <button class="action-icon-btn" title="Open Preview in New Window" onclick="openPreviewInNewWindow()">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Live Iframe Preview Panel -->
+        <div class="preview-panel">
+            <div id="iframe-wrapper" class="iframe-container">
+                <iframe id="preview-iframe" class="preview-iframe" title="Section Live Preview"></iframe>
+            </div>
+        </div>
+
+        <!-- Code Console Output View -->
+        <div class="code-console">
+            <div class="console-header">
+                <div class="console-tabs">
+                    <button id="tab-btn-html" class="console-tab active" onclick="setCodeTab('html')">HTML Template</button>
+                    <button id="tab-btn-css" class="console-tab" onclick="setCodeTab('css')">Component CSS</button>
+                    <button id="tab-btn-js" class="console-tab" onclick="setCodeTab('js')">Component JS</button>
+                    <button id="tab-btn-global" class="console-tab" onclick="setCodeTab('global')">Global Theme CSS</button>
+                </div>
+                <div class="console-actions">
+                    <span id="copy-text-feedback" class="copy-feedback">Copied to Clipboard!</span>
+                    <button class="btn-copy" onclick="copyConsoleCodeToClipboard()">
+                        <i class="fa-solid fa-clipboard"></i> Copy Code
+                    </button>
+                    <button id="btn-toggle-console" class="console-toggle-btn" onclick="toggleConsole(true)" title="Hide Code Console">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="console-body">
+                <textarea id="code-output" class="code-textarea" readonly></textarea>
+                
+                <!-- Floating WP Tips panel -->
+                <div class="wp-tips-panel">
+                    <h3><i class="fa-brands fa-wordpress"></i> WordPress Tips</h3>
+                    <p id="wp-tip-text">
+                        Paste the HTML code into a <strong>Custom HTML</strong> Gutenberg block. Add the component-specific CSS to your child theme or Customizer CSS.
+                    </p>
+                    <ul id="wp-tip-bullets">
+                        <li>Ensure you copy the <strong>Global Theme CSS</strong> once before adding individual building modules.</li>
+                        <li>For construction machinery cards, ensure FontAwesome 6 icons are enqueued in your WordPress theme.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Templates Data Source -->
+    <script src="sections-data.js"></script>
+    
+    <!-- Dashboard Controller Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
