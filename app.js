@@ -4,7 +4,7 @@
 let activePageId = 'main-building'; // Default loaded page template ('main-building', 'machinery-spotlight', 'trade-heavy-side')
 let activeMode = 'isolate'; // 'isolate' or 'builder'
 let activeSectionId = 'top-banner'; // Default selected section in isolate mode
-let activeCodeTab = 'html'; // 'html', 'css', 'js', or 'global'
+let activeCodeTab = 'html'; // 'content', 'html', 'css', 'js', or 'global'
 let viewportWidth = '100%'; // '100%', '768px', '375px'
 let viewportDevice = 'desktop'; // 'desktop', 'tablet', 'mobile'
 
@@ -18,22 +18,33 @@ let selectedSectionIds = builderSections.map(s => s.id);
 let selectionListEl;
 let previewIframeEl;
 let codeOutputEl;
+let contentInspectorEl;
 let activeTitleEl;
 let activeCategoryEl;
 let copyTextFeedbackEl;
+let savedLocallyStatusEl;
+let btnResetSectionEl;
+let liveEditBadgeEl;
 let modeDescEl;
 let btnSelectAllEl;
 let btnClearAllEl;
 let pageTemplateSelectEl;
+
+// Debounce timer for direct textarea typing
+let codeInputDebounceTimer = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     // Cache DOM Elements
     selectionListEl = document.getElementById('selection-list');
     previewIframeEl = document.getElementById('preview-iframe');
     codeOutputEl = document.getElementById('code-output');
+    contentInspectorEl = document.getElementById('content-inspector');
     activeTitleEl = document.getElementById('active-title');
     activeCategoryEl = document.getElementById('active-category');
     copyTextFeedbackEl = document.getElementById('copy-text-feedback');
+    savedLocallyStatusEl = document.getElementById('saved-locally-status');
+    btnResetSectionEl = document.getElementById('btn-reset-section');
+    liveEditBadgeEl = document.getElementById('live-edit-badge');
     modeDescEl = document.getElementById('mode-desc');
     btnSelectAllEl = document.getElementById('btn-select-all');
     btnClearAllEl = document.getElementById('btn-clear-all');
@@ -52,7 +63,107 @@ function init() {
     previewIframeEl.addEventListener('load', () => {
         setupIframeInteractivity();
     });
+
+    // Listen for live edit messages from within the preview iframe
+    window.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'BRIANTS_SECTION_MUTATED') {
+            if (activeMode === 'isolate' && event.data.sectionId === activeSectionId) {
+                saveSectionHtmlLocally(activeSectionId, event.data.html, false);
+            }
+        }
+    });
 }
+
+// --------------------------------------------------------------------------
+// Local Storage Persistence Helpers
+// --------------------------------------------------------------------------
+
+// Get current section HTML (returns localStorage customized version if saved, else default)
+function getSectionHtml(sectionId) {
+    if (sectionId === 'global') return '';
+    const stored = localStorage.getItem('briants_custom_html_' + sectionId);
+    if (stored) return stored;
+    
+    const sec = SECTIONS_DATA.find(s => s.id === sectionId);
+    return sec ? sec.html : '';
+}
+
+// Check if section has custom local edits
+function isSectionCustomized(sectionId) {
+    return Boolean(localStorage.getItem('briants_custom_html_' + sectionId));
+}
+
+// Save customized HTML into localStorage
+function saveSectionHtmlLocally(sectionId, newHtml, shouldUpdateIframe = true) {
+    if (!sectionId || sectionId === 'global') return;
+    
+    localStorage.setItem('briants_custom_html_' + sectionId, newHtml);
+    
+    showSavedFeedback();
+    updateSectionStatusUI();
+    
+    if (shouldUpdateIframe) {
+        updatePreview();
+    }
+    
+    updateCodeDisplay();
+}
+
+// Reset current active section back to default template
+function resetActiveSection() {
+    if (!activeSectionId || activeSectionId === 'global') return;
+    
+    if (confirm(`Reset the "${activeSectionId}" section to its default text and links?`)) {
+        localStorage.removeItem('briants_custom_html_' + activeSectionId);
+        updateSectionStatusUI();
+        updatePreview();
+        updateCodeDisplay();
+        renderSidebar();
+    }
+}
+
+// Reset all sections back to default template
+function resetAllCustomizations() {
+    if (confirm('Reset ALL customized text and links across all sections back to defaults?')) {
+        SECTIONS_DATA.forEach(sec => {
+            localStorage.removeItem('briants_custom_html_' + sec.id);
+        });
+        updateSectionStatusUI();
+        updatePreview();
+        updateCodeDisplay();
+        renderSidebar();
+    }
+}
+
+// Flash green saved badge
+function showSavedFeedback() {
+    if (!savedLocallyStatusEl) return;
+    savedLocallyStatusEl.style.display = 'inline-flex';
+    savedLocallyStatusEl.style.opacity = '1';
+    setTimeout(() => {
+        if (savedLocallyStatusEl) {
+            savedLocallyStatusEl.style.opacity = '0.8';
+        }
+    }, 2500);
+}
+
+// Update status badges and buttons
+function updateSectionStatusUI() {
+    const isCustom = isSectionCustomized(activeSectionId);
+    if (btnResetSectionEl) {
+        btnResetSectionEl.style.display = (activeMode === 'isolate' && isCustom && activeSectionId !== 'global') ? 'inline-flex' : 'none';
+    }
+    if (savedLocallyStatusEl) {
+        savedLocallyStatusEl.style.display = (activeMode === 'isolate' && isCustom && activeSectionId !== 'global') ? 'inline-flex' : 'none';
+    }
+    if (liveEditBadgeEl) {
+        liveEditBadgeEl.style.display = (activeMode === 'isolate' && activeSectionId !== 'global') ? 'inline-flex' : 'none';
+    }
+}
+
+// --------------------------------------------------------------------------
+// Template & Mode Management
+// --------------------------------------------------------------------------
 
 // Populate the page template selector dropdown
 function populatePageTemplates() {
@@ -106,6 +217,7 @@ function loadPageTemplate(pageId) {
     renderSidebar();
     updatePreview();
     updateCodeDisplay();
+    updateSectionStatusUI();
 }
 
 // Switch Mode between Isolated Preview and Page Builder
@@ -118,19 +230,21 @@ function setMode(mode) {
     document.getElementById('btn-mode-builder').classList.toggle('active', mode === 'builder');
     
     if (mode === 'isolate') {
-        modeDescEl.textContent = 'Select a single building section below to isolate and view its dedicated HTML, CSS, and JS.';
+        modeDescEl.textContent = 'Select a section to isolate. Click directly on text/links in the preview or use the inspector below to edit & save.';
         btnSelectAllEl.style.display = 'none';
         btnClearAllEl.style.display = 'none';
         if (activeCodeTab === 'global') activeCodeTab = 'html';
     } else {
-        modeDescEl.textContent = 'Check building sections to combine them into a custom landing page. Arrange their layout order with arrows.';
+        modeDescEl.textContent = 'Check building sections to combine them into a custom landing page. Arrange layout order with arrows.';
         btnSelectAllEl.style.display = 'flex';
         btnClearAllEl.style.display = 'flex';
+        if (activeCodeTab === 'content') activeCodeTab = 'html';
     }
     
     renderSidebar();
     updatePreview();
     updateCodeDisplay();
+    updateSectionStatusUI();
 }
 
 // Render Sidebar selection items
@@ -170,11 +284,16 @@ function createIsolateItem(section) {
         li.classList.add('selected', 'active-preview');
     }
     
+    const isCustom = isSectionCustomized(section.id);
+    const customBadge = isCustom ? `<span style="color:#22c55e; font-size:0.7rem; margin-right:0.35rem;" title="Custom text saved locally"><i class="fa-solid fa-pen-circle-check"></i></span>` : '';
+    
     li.innerHTML = `
         <label>
             <i class="fa-solid ${getCategoryIcon(section.category)}"></i>
             <span>${section.name}</span>
-            <span class="item-meta">${section.category}</span>
+            <span class="item-meta" style="display:flex; align-items:center;">
+                ${customBadge}${section.category}
+            </span>
         </label>
     `;
     
@@ -187,6 +306,7 @@ function createIsolateItem(section) {
         
         updatePreview();
         updateCodeDisplay();
+        updateSectionStatusUI();
     });
     
     return li;
@@ -309,32 +429,39 @@ function openPreviewInNewWindow() {
         return;
     }
     
-    const docData = generateIframeContent();
+    const docData = generateIframeContent(false);
     previewWindow.document.open();
     previewWindow.document.write(docData);
     previewWindow.document.close();
 }
 
+// --------------------------------------------------------------------------
+// Iframe Content Generation & Live In-Page Editing
+// --------------------------------------------------------------------------
+
 // Generate compiled HTML content to inject in Iframe
-function generateIframeContent() {
+function generateIframeContent(enableEditingInIsolated = true) {
     const globalSection = SECTIONS_DATA.find(s => s.id === 'global');
     const globalStyle = globalSection ? globalSection.css : '';
     let combinedHtml = '';
     let combinedCss = '';
     let combinedJs = '';
     
+    const isEditing = enableEditingInIsolated && activeMode === 'isolate' && activeSectionId !== 'global';
+    
     if (activeMode === 'isolate') {
         const section = SECTIONS_DATA.find(s => s.id === activeSectionId);
         if (section) {
-            combinedHtml = section.html;
+            combinedHtml = getSectionHtml(section.id);
             combinedCss = section.css || '';
             combinedJs = section.js || '';
         }
     } else {
-        // Builder mode - combine all checked sections in order
+        // Builder mode - combine all checked sections in order using saved/custom HTML
         builderSections.forEach(section => {
             if (selectedSectionIds.includes(section.id)) {
-                combinedHtml += `\n<!-- Section: ${section.name} -->\n` + section.html + '\n';
+                const secHtml = getSectionHtml(section.id);
+                combinedHtml += `\n<!-- Section: ${section.name} -->\n` + secHtml + '\n';
                 combinedCss += `\n/* Section: ${section.name} */\n` + (section.css || '') + '\n';
                 combinedJs += `\n/* Section: ${section.name} */\n` + (section.js || '') + '\n';
             }
@@ -344,6 +471,191 @@ function generateIframeContent() {
             combinedHtml = '<div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; color:#64748b; text-align:center;"><div><i class="fa-solid fa-folder-open" style="font-size:3rem; margin-bottom:1rem; display:block; color:#94a3b8;"></i><h3>No sections selected</h3><p style="font-size:0.85rem; margin-top:0.25rem;">Check some boxes in the sidebar to build your building materials landing page preview.</p></div></div>';
         }
     }
+    
+    // Injected in-frame editing stylesheet & popover handler for Isolated mode
+    const inFrameEditingStyle = isEditing ? `
+        /* In-Iframe Live Content & Link Editing Styles */
+        [data-briants-editable="true"] {
+            transition: outline 0.15s ease, background-color 0.15s ease;
+            position: relative;
+        }
+        [data-briants-editable="true"]:hover {
+            outline: 1.5px dashed #d2a138 !important;
+            outline-offset: 2px;
+            cursor: text !important;
+        }
+        [data-briants-editable="true"]:focus {
+            outline: 2px solid #005c30 !important;
+            outline-offset: 3px;
+            background-color: rgba(210, 161, 56, 0.15) !important;
+        }
+        .briants-link-editor-popover {
+            position: fixed;
+            z-index: 999999;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #ffffff;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 280px;
+        }
+        .briants-link-editor-popover label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .briants-link-editor-popover input {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #ffffff;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            outline: none;
+            width: 100%;
+        }
+        .briants-link-editor-popover input:focus {
+            border-color: #d2a138;
+        }
+        .briants-link-editor-popover .popover-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.4rem;
+            margin-top: 0.25rem;
+        }
+        .briants-link-editor-popover button {
+            background: #005c30;
+            color: #ffffff;
+            border: none;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .briants-link-editor-popover button.btn-close {
+            background: #334155;
+        }
+    ` : '';
+
+    const inFrameEditingScript = isEditing ? `
+        // In-Iframe Live Selection & Editing Controller
+        (function() {
+            const root = document.getElementById('briants-landing-page');
+            if (!root) return;
+
+            // Target candidate text and link elements
+            const selector = 'h1, h2, h3, h4, h5, p, span.brand-title, span.brand-sub, span.tile-spec, span.cat-link, span.price-val, span.price-label, span.deal-sub, span.deal-stock-status, span.hero-highlight, .tile-badge, .feat-pill, .ins-badge, .panel-badge, .workshop-badge, .m-highlight, li, a, button, td, th';
+            const editables = root.querySelectorAll(selector);
+
+            let activeLinkPopover = null;
+
+            function removePopover() {
+                if (activeLinkPopover && activeLinkPopover.parentNode) {
+                    activeLinkPopover.parentNode.removeChild(activeLinkPopover);
+                    activeLinkPopover = null;
+                }
+            }
+
+            function syncChangesToParent() {
+                removePopover();
+                const currentHtml = root.innerHTML;
+                window.parent.postMessage({
+                    type: 'BRIANTS_SECTION_MUTATED',
+                    sectionId: '${activeSectionId}',
+                    html: currentHtml
+                }, '*');
+            }
+
+            editables.forEach(el => {
+                // Ignore nested wrapper if parent is also being targeted as a single block
+                el.setAttribute('contenteditable', 'true');
+                el.setAttribute('data-briants-editable', 'true');
+
+                // Prevent links from navigating in isolate mode
+                if (el.tagName === 'A' || el.closest('a')) {
+                    el.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const linkEl = el.tagName === 'A' ? el : el.closest('a');
+                        showLinkEditor(linkEl);
+                    });
+                }
+
+                el.addEventListener('input', () => {
+                    syncChangesToParent();
+                });
+
+                el.addEventListener('blur', () => {
+                    syncChangesToParent();
+                });
+            });
+
+            function showLinkEditor(linkEl) {
+                removePopover();
+                if (!linkEl) return;
+
+                const rect = linkEl.getBoundingClientRect();
+                const popover = document.createElement('div');
+                popover.className = 'briants-link-editor-popover';
+                
+                // Position popover
+                const top = Math.min(window.innerHeight - 150, Math.max(10, rect.bottom + 8));
+                const left = Math.min(window.innerWidth - 300, Math.max(10, rect.left));
+                popover.style.top = top + 'px';
+                popover.style.left = left + 'px';
+
+                popover.innerHTML = \`
+                    <label><i class="fa-solid fa-link"></i> Edit Link URL (href):</label>
+                    <input type="text" id="popover-href-input" value="\${linkEl.getAttribute('href') || '#'}" placeholder="e.g. #briants-trade-form or tel:01844343663">
+                    <div class="popover-btns">
+                        <button type="button" class="btn-close" id="popover-btn-close">Close</button>
+                        <button type="button" id="popover-btn-save">Apply Link</button>
+                    </div>
+                \`;
+
+                document.body.appendChild(popover);
+                activeLinkPopover = popover;
+
+                const hrefInput = popover.querySelector('#popover-href-input');
+                hrefInput.focus();
+                hrefInput.select();
+
+                popover.querySelector('#popover-btn-save').addEventListener('click', () => {
+                    linkEl.setAttribute('href', hrefInput.value);
+                    removePopover();
+                    syncChangesToParent();
+                });
+
+                popover.querySelector('#popover-btn-close').addEventListener('click', () => {
+                    removePopover();
+                });
+
+                hrefInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        linkEl.setAttribute('href', hrefInput.value);
+                        removePopover();
+                        syncChangesToParent();
+                    }
+                });
+            }
+
+            // Close popover when clicking elsewhere
+            document.addEventListener('click', (e) => {
+                if (activeLinkPopover && !activeLinkPopover.contains(e.target) && !e.target.closest('a')) {
+                    removePopover();
+                }
+            });
+        })();
+    ` : '';
     
     return `
     <!DOCTYPE html>
@@ -368,6 +680,7 @@ function generateIframeContent() {
             }
             ${globalStyle}
             ${combinedCss}
+            ${inFrameEditingStyle}
         </style>
     </head>
     <body>
@@ -387,6 +700,8 @@ function generateIframeContent() {
             } catch(e) {
                 console.error("Iframe Script Execution Error:", e);
             }
+
+            ${inFrameEditingScript}
         </script>
     </body>
     </html>
@@ -420,10 +735,16 @@ function setupIframeInteractivity() {
     }
 }
 
+// --------------------------------------------------------------------------
+// Code Console & Content Inspector Logic
+// --------------------------------------------------------------------------
+
 // Switch code viewer tabs
 function setCodeTab(tab) {
     activeCodeTab = tab;
     
+    const tabContentBtn = document.getElementById('tab-btn-content');
+    if (tabContentBtn) tabContentBtn.classList.toggle('active', tab === 'content');
     document.getElementById('tab-btn-html').classList.toggle('active', tab === 'html');
     document.getElementById('tab-btn-css').classList.toggle('active', tab === 'css');
     document.getElementById('tab-btn-js').classList.toggle('active', tab === 'js');
@@ -438,7 +759,17 @@ function setCodeTab(tab) {
     updateCodeDisplay();
 }
 
-// Get the text to show inside the code console
+// Direct HTML typing handler from the code textarea
+function onConsoleHtmlInput(val) {
+    if (activeMode !== 'isolate' || activeCodeTab !== 'html' || activeSectionId === 'global') return;
+    
+    clearTimeout(codeInputDebounceTimer);
+    codeInputDebounceTimer = setTimeout(() => {
+        saveSectionHtmlLocally(activeSectionId, val, true);
+    }, 300);
+}
+
+// Get the text to show inside the code console textarea
 function getActiveCodeText() {
     const globalSection = SECTIONS_DATA.find(s => s.id === 'global');
     
@@ -451,10 +782,16 @@ function getActiveCodeText() {
         if (!section) return '';
         
         switch (activeCodeTab) {
-            case 'html': return section.html;
-            case 'css': return section.css || '/* No component-specific CSS needed. Uses Global Theme styles. */';
-            case 'js': return section.js || '// No JavaScript required for this section.';
-            default: return '';
+            case 'content':
+                return ''; // Rendered via DOM inspector form instead
+            case 'html':
+                return getSectionHtml(section.id);
+            case 'css':
+                return section.css || '/* No component-specific CSS needed. Uses Global Theme styles. */';
+            case 'js':
+                return section.js || '// No JavaScript required for this section.';
+            default:
+                return '';
         }
     } else {
         // Builder mode compiled output
@@ -462,7 +799,7 @@ function getActiveCodeText() {
         builderSections.forEach(section => {
             if (selectedSectionIds.includes(section.id)) {
                 if (activeCodeTab === 'html') {
-                    combined += `<!-- Section: ${section.name} -->\n` + section.html + '\n\n';
+                    combined += `<!-- Section: ${section.name} -->\n` + getSectionHtml(section.id) + '\n\n';
                 } else if (activeCodeTab === 'css' && section.css) {
                     combined += `/* Section: ${section.name} */\n` + section.css + '\n\n';
                 } else if (activeCodeTab === 'js' && section.js) {
@@ -490,19 +827,188 @@ function updateCodeDisplay() {
     if (activeMode === 'isolate' && activeSection) {
         activeTitleEl.textContent = activeSection.name;
         activeCategoryEl.textContent = 'Category: ' + activeSection.category;
+        // Make HTML textarea directly editable in Isolated view
+        codeOutputEl.readOnly = (activeCodeTab !== 'html');
     } else {
         const template = PAGE_TEMPLATES.find(p => p.id === activePageId);
         const templateName = template ? template.name : 'Custom';
         activeTitleEl.textContent = `${templateName} (${selectedSectionIds.length} Sections)`;
         activeCategoryEl.textContent = 'Mode: Page Builder Combined View';
+        codeOutputEl.readOnly = true;
     }
     
-    codeOutputEl.value = getActiveCodeText();
+    if (activeCodeTab === 'content' && activeMode === 'isolate' && activeSectionId !== 'global') {
+        codeOutputEl.style.display = 'none';
+        contentInspectorEl.style.display = 'flex';
+        renderContentInspector();
+    } else {
+        codeOutputEl.style.display = 'block';
+        contentInspectorEl.style.display = 'none';
+        codeOutputEl.value = getActiveCodeText();
+    }
 }
+
+// --------------------------------------------------------------------------
+// Visual Text & Links Inspector Form Builder
+// --------------------------------------------------------------------------
+
+function renderContentInspector() {
+    if (!contentInspectorEl) return;
+    contentInspectorEl.innerHTML = '';
+
+    const currentHtml = getSectionHtml(activeSectionId);
+    if (!currentHtml) {
+        contentInspectorEl.innerHTML = '<div style="color:#94a3b8; padding:1rem;">Select an isolated section to view and edit its text & links.</div>';
+        return;
+    }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(currentHtml, 'text/html');
+
+    // Header card
+    const headerInfo = document.createElement('div');
+    headerInfo.className = 'inspector-header-info';
+    headerInfo.innerHTML = `
+        <h4><i class="fa-solid fa-pen-to-square"></i> Live Content & Link Inspector</h4>
+        <span>Edits update the live preview and save automatically in your browser</span>
+    `;
+    contentInspectorEl.appendChild(headerInfo);
+
+    // 1. Headings (h1, h2, h3, h4)
+    const headings = doc.querySelectorAll('h1, h2, h3, h4');
+    if (headings.length > 0) {
+        const card = document.createElement('div');
+        card.className = 'inspector-card';
+        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-heading"></i> Headings & Titles (${headings.length})</div>`;
+
+        headings.forEach((heading, idx) => {
+            const field = document.createElement('div');
+            field.className = 'inspector-field';
+            const tag = heading.tagName.toLowerCase();
+            const labelText = heading.textContent.trim().substring(0, 35) || `Heading ${idx + 1}`;
+
+            field.innerHTML = `
+                <label class="inspector-label"><i class="fa-solid fa-tag"></i> &lt;${tag}&gt; ${labelText}:</label>
+                <input type="text" class="inspector-input" data-selector="${tag}" data-index="${idx}" value="${escapeHtmlAttr(heading.textContent.trim())}">
+            `;
+
+            const input = field.querySelector('input');
+            input.addEventListener('input', () => {
+                heading.textContent = input.value;
+                saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+            });
+
+            card.appendChild(field);
+        });
+
+        contentInspectorEl.appendChild(card);
+    }
+
+    // 2. Paragraphs (p)
+    const paragraphs = doc.querySelectorAll('p');
+    if (paragraphs.length > 0) {
+        const card = document.createElement('div');
+        card.className = 'inspector-card';
+        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-align-left"></i> Body Text & Paragraphs (${paragraphs.length})</div>`;
+
+        paragraphs.forEach((p, idx) => {
+            const field = document.createElement('div');
+            field.className = 'inspector-field';
+            const previewText = p.textContent.trim().substring(0, 40) || `Paragraph ${idx + 1}`;
+
+            field.innerHTML = `
+                <label class="inspector-label"><i class="fa-solid fa-paragraph"></i> Paragraph ${idx + 1} (${previewText}...):</label>
+                <textarea class="inspector-textarea" data-index="${idx}">${p.textContent.trim()}</textarea>
+            `;
+
+            const textarea = field.querySelector('textarea');
+            textarea.addEventListener('input', () => {
+                p.textContent = textarea.value;
+                saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+            });
+
+            card.appendChild(field);
+        });
+
+        contentInspectorEl.appendChild(card);
+    }
+
+    // 3. Links and Buttons (a, button)
+    const links = doc.querySelectorAll('a, button.briants-btn');
+    if (links.length > 0) {
+        const card = document.createElement('div');
+        card.className = 'inspector-card';
+        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-link"></i> Links & Buttons (${links.length})</div>`;
+
+        links.forEach((link, idx) => {
+            const field = document.createElement('div');
+            field.className = 'inspector-field';
+            const isAnchor = link.tagName === 'A';
+            const linkText = link.textContent.trim();
+            const hrefVal = isAnchor ? (link.getAttribute('href') || '#') : '(Button Action)';
+
+            field.innerHTML = `
+                <div class="inspector-link-row">
+                    <div>
+                        <label class="inspector-label"><i class="fa-solid fa-font"></i> Button / Link Text:</label>
+                        <input type="text" class="inspector-input link-text-input" value="${escapeHtmlAttr(linkText)}">
+                    </div>
+                    <div>
+                        <label class="inspector-label"><i class="fa-solid fa-arrow-up-right-from-square"></i> Link Target (href):</label>
+                        <input type="text" class="inspector-input link-href-input" value="${escapeHtmlAttr(hrefVal)}" ${!isAnchor ? 'disabled' : ''}>
+                    </div>
+                </div>
+            `;
+
+            const textInput = field.querySelector('.link-text-input');
+            const hrefInput = field.querySelector('.link-href-input');
+
+            textInput.addEventListener('input', () => {
+                // Preserve icons inside buttons if present
+                const icon = link.querySelector('i');
+                if (icon) {
+                    link.innerHTML = textInput.value + ' ' + icon.outerHTML;
+                } else {
+                    link.textContent = textInput.value;
+                }
+                saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+            });
+
+            if (isAnchor) {
+                hrefInput.addEventListener('input', () => {
+                    link.setAttribute('href', hrefInput.value);
+                    saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+                });
+            }
+
+            card.appendChild(field);
+        });
+
+        contentInspectorEl.appendChild(card);
+    }
+}
+
+// HTML attribute escaper helper
+function escapeHtmlAttr(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+// --------------------------------------------------------------------------
+// Clipboard & Panel Controls
+// --------------------------------------------------------------------------
 
 // Copy Console code directly to clipboard
 function copyConsoleCodeToClipboard() {
-    const code = codeOutputEl.value;
+    let code = codeOutputEl.value;
+    if (activeCodeTab === 'content') {
+        code = getSectionHtml(activeSectionId);
+    }
     if (!code) return;
     
     navigator.clipboard.writeText(code).then(() => {

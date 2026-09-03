@@ -494,10 +494,6 @@ const SECTIONS_DATA = [
     <div class="hero-bg-overlay"></div>
     <div class="hero-inner">
         <div class="hero-card">
-            <div class="hero-badge-row">
-                <span class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Authorised Builders Merchant</span>
-                <span class="hero-badge hero-badge-gold"><i class="fa-solid fa-truck"></i> Hiab Crane Fleet</span>
-            </div>
             <h1>Quality Building Materials, <span class="hero-highlight">Delivered Direct To Site.</span></h1>
             <p class="hero-desc">From full loads of facing bricks, dense blocks, and Celotex PIR insulation to C24 structural timber and professional site machinery—Briants supplies trade contractors and self-builders with premium materials, rapid crane delivery, and honest merchant pricing.</p>
             
@@ -3200,7 +3196,6 @@ document.querySelectorAll('#briants-faq .faq-question').forEach(button => {
     <div class="machinery-hero-overlay"></div>
     <div class="machinery-hero-inner">
         <div class="machinery-hero-card">
-            <span class="m-hero-badge"><i class="fa-solid fa-hammer"></i> Main Plant & Tool Dealer</span>
             <h1>Heavy Site Machinery, <span class="m-highlight">Ready To Work.</span></h1>
             <p>From world-renowned Belle tip-up cement mixers to Stihl precision cut-off saws and HSE-compliant M-Class silica dust vacs—Briants delivers fully assembled, PDI-inspected machinery backed by full manufacturer warranties and an on-site service workshop.</p>
             

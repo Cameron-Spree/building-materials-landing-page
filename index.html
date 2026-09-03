@@ -671,6 +671,163 @@
             background-color: var(--db-primary);
             transform: translateY(-2px);
         }
+
+        /* --- Text & Links Content Inspector --- */
+        .content-inspector-container {
+            width: calc(100% - 320px);
+            height: 100%;
+            background-color: #0b0f19;
+            overflow-y: auto;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .inspector-header-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--db-border);
+            padding-bottom: 0.75rem;
+        }
+
+        .inspector-header-info h4 {
+            font-size: 0.95rem;
+            color: #ffffff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .inspector-header-info h4 i {
+            color: var(--db-accent);
+        }
+
+        .inspector-header-info span {
+            font-size: 0.75rem;
+            color: var(--db-text-light);
+        }
+
+        .inspector-card {
+            background-color: #1e293b;
+            border: 1px solid var(--db-border);
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .inspector-card-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--db-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .inspector-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .inspector-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .inspector-label i {
+            color: var(--db-text-light);
+            font-size: 0.75rem;
+        }
+
+        .inspector-input,
+        .inspector-textarea {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.85rem;
+            padding: 0.55rem 0.75rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .inspector-textarea {
+            resize: vertical;
+            min-height: 60px;
+            line-height: 1.45;
+        }
+
+        .inspector-input:focus,
+        .inspector-textarea:focus {
+            border-color: var(--db-accent);
+            box-shadow: 0 0 0 2px rgba(210, 161, 56, 0.2);
+            background-color: #141e33;
+        }
+
+        .inspector-link-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .saved-status-badge {
+            font-size: 0.75rem;
+            color: #22c55e;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-reset {
+            background-color: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 0.4rem 0.85rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reset:hover {
+            background-color: #475569;
+            color: #fca5a5;
+            border-color: #ef4444;
+        }
+
+        .live-edit-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            color: var(--db-accent);
+            background-color: rgba(210, 161, 56, 0.15);
+            border: 1px solid rgba(210, 161, 56, 0.3);
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            margin-left: 0.75rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -746,9 +903,14 @@
         
         <!-- Workspace Top Toolbar -->
         <div class="toolbar">
-            <div class="toolbar-title">
-                <h2 id="active-title">Global Styles & Resets</h2>
-                <span id="active-category">Category: Base Styles</span>
+            <div class="toolbar-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    <h2 id="active-title">Global Styles & Resets</h2>
+                    <span id="active-category">Category: Base Styles</span>
+                </div>
+                <span id="live-edit-badge" class="live-edit-hint" style="display:none;" title="Click any heading, paragraph, button, or link in the preview below to edit live">
+                    <i class="fa-solid fa-pen-to-square"></i> Live Click-to-Edit
+                </span>
             </div>
 
             <!-- Viewport Resizer controls -->
@@ -786,12 +948,21 @@
         <div class="code-console">
             <div class="console-header">
                 <div class="console-tabs">
+                    <button id="tab-btn-content" class="console-tab" onclick="setCodeTab('content')">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Text & Links
+                    </button>
                     <button id="tab-btn-html" class="console-tab active" onclick="setCodeTab('html')">HTML Template</button>
                     <button id="tab-btn-css" class="console-tab" onclick="setCodeTab('css')">Component CSS</button>
                     <button id="tab-btn-js" class="console-tab" onclick="setCodeTab('js')">Component JS</button>
                     <button id="tab-btn-global" class="console-tab" onclick="setCodeTab('global')">Global Theme CSS</button>
                 </div>
                 <div class="console-actions">
+                    <span id="saved-locally-status" class="saved-status-badge" style="display: none;">
+                        <i class="fa-solid fa-circle-check"></i> Saved locally
+                    </span>
+                    <button id="btn-reset-section" class="btn-reset" onclick="resetActiveSection()" title="Reset current section to original template" style="display: none;">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Section
+                    </button>
                     <span id="copy-text-feedback" class="copy-feedback">Copied to Clipboard!</span>
                     <button class="btn-copy" onclick="copyConsoleCodeToClipboard()">
                         <i class="fa-solid fa-clipboard"></i> Copy Code
@@ -803,7 +974,11 @@
             </div>
 
             <div class="console-body">
-                <textarea id="code-output" class="code-textarea" readonly></textarea>
+                <!-- Visual Text & Links Inspector Form -->
+                <div id="content-inspector" class="content-inspector-container" style="display: none;"></div>
+
+                <!-- Raw Code View -->
+                <textarea id="code-output" class="code-textarea" oninput="onConsoleHtmlInput(this.value)"></textarea>
                 
                 <!-- Floating WP Tips panel -->
                 <div class="wp-tips-panel">
@@ -812,6 +987,7 @@
                         Paste the HTML code into a <strong>Custom HTML</strong> Gutenberg block. Add the component-specific CSS to your child theme or Customizer CSS.
                     </p>
                     <ul id="wp-tip-bullets">
+                        <li>All text and link edits made in Isolated View are automatically <strong>saved locally in your browser</strong>.</li>
                         <li>Ensure you copy the <strong>Global Theme CSS</strong> once before adding individual building modules.</li>
                         <li>For construction machinery cards, ensure FontAwesome 6 icons are enqueued in your WordPress theme.</li>
                     </ul>
