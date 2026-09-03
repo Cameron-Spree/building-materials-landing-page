@@ -103,10 +103,28 @@ function saveSectionHtmlLocally(sectionId, newHtml, shouldUpdateIframe = true) {
     updateSectionStatusUI();
     
     if (shouldUpdateIframe) {
-        updatePreview();
+        syncIframeBodyInPlace(newHtml);
     }
     
-    updateCodeDisplay();
+    if (codeOutputEl && activeCodeTab === 'html') {
+        codeOutputEl.value = newHtml;
+    }
+}
+
+// In-place live sync without full iframe reload (prevents scroll jump to top)
+function syncIframeBodyInPlace(newHtml) {
+    try {
+        const iframeDoc = previewIframeEl.contentDocument || previewIframeEl.contentWindow.document;
+        const root = iframeDoc.getElementById('briants-landing-page');
+        if (root && activeMode === 'isolate') {
+            root.innerHTML = newHtml;
+            setupIframeInteractivity();
+            return;
+        }
+    } catch (e) {
+        console.warn('In-place iframe sync fallback:', e);
+    }
+    updatePreview();
 }
 
 // Reset current active section back to default template
@@ -575,7 +593,6 @@ function generateIframeContent(enableEditingInIsolated = true) {
             }
 
             editables.forEach(el => {
-                // Ignore nested wrapper if parent is also being targeted as a single block
                 el.setAttribute('contenteditable', 'true');
                 el.setAttribute('data-briants-editable', 'true');
 
@@ -849,7 +866,7 @@ function updateCodeDisplay() {
 }
 
 // --------------------------------------------------------------------------
-// Visual Text & Links Inspector Form Builder
+// Visual Card-by-Card Text & Links Inspector Form Builder
 // --------------------------------------------------------------------------
 
 function renderContentInspector() {
@@ -865,96 +882,360 @@ function renderContentInspector() {
     const parser = new DOMParser();
     const doc = parser.parseFromString(currentHtml, 'text/html');
 
-    // Header card
+    // Helper: Save DOM modifications live without unmounting form or reloading iframe
+    function applyInspectorChanges() {
+        const updatedHtml = doc.body.innerHTML;
+        localStorage.setItem('briants_custom_html_' + activeSectionId, updatedHtml);
+        showSavedFeedback();
+        updateSectionStatusUI();
+        syncIframeBodyInPlace(updatedHtml);
+        if (codeOutputEl && activeCodeTab === 'html') {
+            codeOutputEl.value = updatedHtml;
+        }
+    }
+
+    // Header info
     const headerInfo = document.createElement('div');
     headerInfo.className = 'inspector-header-info';
     headerInfo.innerHTML = `
-        <h4><i class="fa-solid fa-pen-to-square"></i> Live Content & Link Inspector</h4>
-        <span>Edits update the live preview and save automatically in your browser</span>
+        <h4><i class="fa-solid fa-cubes"></i> Category & Content Editor</h4>
+        <span>Edits update live in preview & save in your browser. Add or remove categories below.</span>
     `;
     contentInspectorEl.appendChild(headerInfo);
 
-    // 1. Headings (h1, h2, h3, h4)
+    // 1. Section Header Block (Subtitle, Main Title, Intro Paragraph)
+    const sectionHeader = doc.querySelector('.briants-section-header');
+    if (sectionHeader) {
+        const headerCard = document.createElement('div');
+        headerCard.className = 'inspector-card';
+        headerCard.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-heading"></i> Section Title & Introduction</div>`;
+
+        // Subtitle
+        const subtitleEl = sectionHeader.querySelector('.briants-section-subtitle');
+        if (subtitleEl) {
+            const field = document.createElement('div');
+            field.className = 'inspector-field';
+            field.innerHTML = `
+                <label class="inspector-label"><i class="fa-solid fa-tag"></i> Section Subtitle Pill:</label>
+                <input type="text" class="inspector-input" value="${escapeHtmlAttr(subtitleEl.textContent.trim())}">
+            `;
+            const input = field.querySelector('input');
+            input.addEventListener('input', () => {
+                subtitleEl.textContent = input.value;
+                applyInspectorChanges();
+            });
+            headerCard.appendChild(field);
+        }
+
+        // H2 Main Heading
+        const h2El = sectionHeader.querySelector('h2');
+        if (h2El) {
+            const field = document.createElement('div');
+            field.className = 'inspector-field';
+            field.innerHTML = `
+                <label class="inspector-label"><i class="fa-solid fa-heading"></i> Main Section Heading (H2):</label>
+                <input type="text" class="inspector-input" value="${escapeHtmlAttr(h2El.textContent.trim())}">
+            `;
+            const input = field.querySelector('input');
+            input.addEventListener('input', () => {
+                h2El.textContent = input.value;
+                applyInspectorChanges();
+            });
+            headerCard.appendChild(field);
+        }
+
+        // Intro Paragraph
+        const pEl = sectionHeader.querySelector('p');
+        if (pEl) {
+            const field = document.createElement('div');
+            field.className = 'inspector-field';
+            field.innerHTML = `
+                <label class="inspector-label"><i class="fa-solid fa-align-left"></i> Section Introduction Paragraph:</label>
+                <textarea class="inspector-textarea">${pEl.textContent.trim()}</textarea>
+            `;
+            const textarea = field.querySelector('textarea');
+            textarea.addEventListener('input', () => {
+                pEl.textContent = textarea.value;
+                applyInspectorChanges();
+            });
+            headerCard.appendChild(field);
+        }
+
+        contentInspectorEl.appendChild(headerCard);
+    }
+
+    // 2. Identify Repeatable Category Cards / Items
+    const cardSelectors = [
+        '.quick-cat-card',
+        '.product-tile',
+        '.insulation-card',
+        '.machinery-card',
+        '.deal-card',
+        '.feature-box',
+        '.trade-promo-col',
+        '.extra-item',
+        '.brand-item',
+        '.faq-item',
+        '.showroom-card'
+    ];
+
+    let matchedCards = [];
+    let matchedSelector = '';
+    let gridContainer = null;
+
+    for (const sel of cardSelectors) {
+        const found = doc.querySelectorAll(sel);
+        if (found.length > 0) {
+            matchedCards = Array.from(found);
+            matchedSelector = sel;
+            gridContainer = matchedCards[0].parentElement;
+            break;
+        }
+    }
+
+    // If repeatable cards exist, render Card-by-Card with Add/Delete
+    if (matchedCards.length > 0) {
+        const cardsGroupContainer = document.createElement('div');
+        cardsGroupContainer.style.display = 'flex';
+        cardsGroupContainer.style.flexDirection = 'column';
+        cardsGroupContainer.style.gap = '1rem';
+
+        matchedCards.forEach((cardEl, idx) => {
+            const cardBox = document.createElement('div');
+            cardBox.className = 'inspector-card';
+
+            // Find elements inside this card
+            const titleEl = cardEl.querySelector('h3, h4, strong');
+            const descEl = cardEl.querySelector('p');
+            const linkEl = cardEl.tagName === 'A' ? cardEl : cardEl.querySelector('a');
+            const linkTextEl = cardEl.querySelector('.cat-link, .cat-action-link, .briants-btn') || (cardEl.tagName === 'A' ? null : linkEl);
+            const iconEl = cardEl.querySelector('i');
+
+            const currentTitle = titleEl ? titleEl.textContent.trim() : `Category ${idx + 1}`;
+
+            // Card Header with Delete Button
+            const cardHeader = document.createElement('div');
+            cardHeader.className = 'inspector-card-title';
+            cardHeader.innerHTML = `
+                <span><i class="fa-solid fa-cube"></i> Category ${idx + 1}: ${escapeHtmlAttr(currentTitle)}</span>
+                ${matchedCards.length > 1 ? `<button type="button" class="btn-delete-card"><i class="fa-solid fa-trash"></i> Delete</button>` : ''}
+            `;
+
+            if (matchedCards.length > 1) {
+                const deleteBtn = cardHeader.querySelector('.btn-delete-card');
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm(`Remove "${currentTitle}" from this section?`)) {
+                        cardEl.remove();
+                        applyInspectorChanges();
+                        renderContentInspector(); // Refresh cards list
+                    }
+                });
+            }
+
+            cardBox.appendChild(cardHeader);
+
+            // 1. Category Title Field
+            if (titleEl) {
+                const titleField = document.createElement('div');
+                titleField.className = 'inspector-field';
+                titleField.innerHTML = `
+                    <label class="inspector-label"><i class="fa-solid fa-heading"></i> Category Title:</label>
+                    <input type="text" class="inspector-input" value="${escapeHtmlAttr(titleEl.textContent.trim())}">
+                `;
+                const titleInput = titleField.querySelector('input');
+                titleInput.addEventListener('input', () => {
+                    titleEl.textContent = titleInput.value;
+                    cardHeader.querySelector('span').innerHTML = `<i class="fa-solid fa-cube"></i> Category ${idx + 1}: ${escapeHtmlAttr(titleInput.value || `Category ${idx + 1}`)}`;
+                    applyInspectorChanges();
+                });
+                cardBox.appendChild(titleField);
+            }
+
+            // 2. Category Description Field
+            if (descEl) {
+                const descField = document.createElement('div');
+                descField.className = 'inspector-field';
+                descField.innerHTML = `
+                    <label class="inspector-label"><i class="fa-solid fa-align-left"></i> Description / Offer Summary:</label>
+                    <textarea class="inspector-textarea">${descEl.textContent.trim()}</textarea>
+                `;
+                const descTextarea = descField.querySelector('textarea');
+                descTextarea.addEventListener('input', () => {
+                    descEl.textContent = descTextarea.value;
+                    applyInspectorChanges();
+                });
+                cardBox.appendChild(descField);
+            }
+
+            // 3. Link Target & Button Label Fields
+            if (linkEl) {
+                const linkField = document.createElement('div');
+                linkField.className = 'inspector-field';
+                const isAnchorCard = cardEl.tagName === 'A';
+                const hrefVal = linkEl.getAttribute('href') || '#';
+                const linkLabel = linkTextEl ? linkTextEl.textContent.trim() : (isAnchorCard ? 'Card Link Target' : linkEl.textContent.trim());
+
+                linkField.innerHTML = `
+                    <div class="inspector-link-row">
+                        <div>
+                            <label class="inspector-label"><i class="fa-solid fa-font"></i> Link / Action Label:</label>
+                            <input type="text" class="inspector-input link-label-input" value="${escapeHtmlAttr(linkLabel)}">
+                        </div>
+                        <div>
+                            <label class="inspector-label"><i class="fa-solid fa-link"></i> Link Target (href):</label>
+                            <input type="text" class="inspector-input link-href-input" value="${escapeHtmlAttr(hrefVal)}">
+                        </div>
+                    </div>
+                `;
+
+                const labelInput = linkField.querySelector('.link-label-input');
+                const hrefInput = linkField.querySelector('.link-href-input');
+
+                labelInput.addEventListener('input', () => {
+                    if (linkTextEl) {
+                        const icon = linkTextEl.querySelector('i');
+                        if (icon) {
+                            linkTextEl.innerHTML = labelInput.value + ' ' + icon.outerHTML;
+                        } else {
+                            linkTextEl.textContent = labelInput.value;
+                        }
+                    } else if (!isAnchorCard) {
+                        linkEl.textContent = labelInput.value;
+                    }
+                    applyInspectorChanges();
+                });
+
+                hrefInput.addEventListener('input', () => {
+                    linkEl.setAttribute('href', hrefInput.value);
+                    applyInspectorChanges();
+                });
+
+                cardBox.appendChild(linkField);
+            }
+
+            // 4. Icon Selector (if present)
+            if (iconEl) {
+                const iconField = document.createElement('div');
+                iconField.className = 'inspector-field';
+                const currentIconClass = iconEl.className;
+                iconField.innerHTML = `
+                    <label class="inspector-label"><i class="fa-solid fa-icons"></i> FontAwesome Icon Class:</label>
+                    <input type="text" class="inspector-input" value="${escapeHtmlAttr(currentIconClass)}">
+                `;
+                const iconInput = iconField.querySelector('input');
+                iconInput.addEventListener('input', () => {
+                    iconEl.className = iconInput.value;
+                    applyInspectorChanges();
+                });
+                cardBox.appendChild(iconField);
+            }
+
+            cardsGroupContainer.appendChild(cardBox);
+        });
+
+        // "➕ Add New Category" Button
+        if (gridContainer) {
+            const addBtn = document.createElement('button');
+            addBtn.type = 'button';
+            addBtn.className = 'btn-add-card';
+            addBtn.innerHTML = `<i class="fa-solid fa-plus-circle"></i> Add New Category / Card`;
+
+            addBtn.addEventListener('click', () => {
+                const lastCard = matchedCards[matchedCards.length - 1];
+                const clone = lastCard.cloneNode(true);
+
+                // Reset texts on new clone
+                const cloneTitle = clone.querySelector('h3, h4, strong');
+                if (cloneTitle) cloneTitle.textContent = 'New Category';
+
+                const cloneDesc = clone.querySelector('p');
+                if (cloneDesc) cloneDesc.textContent = 'Explore our full range of quality building materials.';
+
+                const cloneLink = clone.tagName === 'A' ? clone : clone.querySelector('a');
+                if (cloneLink) cloneLink.setAttribute('href', '#briants-quick-categories');
+
+                gridContainer.appendChild(clone);
+                applyInspectorChanges();
+                renderContentInspector(); // Refresh inspector so new card appears ready to edit
+            });
+
+            cardsGroupContainer.appendChild(addBtn);
+        }
+
+        contentInspectorEl.appendChild(cardsGroupContainer);
+    } else {
+        // Fallback for non-card sections (e.g., Hero, Top Banner, Footer)
+        renderGenericInspector(doc, applyInspectorChanges);
+    }
+}
+
+// Fallback generic element-by-element inspector
+function renderGenericInspector(doc, applyInspectorChanges) {
     const headings = doc.querySelectorAll('h1, h2, h3, h4');
     if (headings.length > 0) {
         const card = document.createElement('div');
         card.className = 'inspector-card';
-        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-heading"></i> Headings & Titles (${headings.length})</div>`;
-
+        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-heading"></i> Headings & Titles</div>`;
         headings.forEach((heading, idx) => {
             const field = document.createElement('div');
             field.className = 'inspector-field';
             const tag = heading.tagName.toLowerCase();
-            const labelText = heading.textContent.trim().substring(0, 35) || `Heading ${idx + 1}`;
-
             field.innerHTML = `
-                <label class="inspector-label"><i class="fa-solid fa-tag"></i> &lt;${tag}&gt; ${labelText}:</label>
-                <input type="text" class="inspector-input" data-selector="${tag}" data-index="${idx}" value="${escapeHtmlAttr(heading.textContent.trim())}">
+                <label class="inspector-label">&lt;${tag}&gt; Heading ${idx + 1}:</label>
+                <input type="text" class="inspector-input" value="${escapeHtmlAttr(heading.textContent.trim())}">
             `;
-
             const input = field.querySelector('input');
             input.addEventListener('input', () => {
                 heading.textContent = input.value;
-                saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+                applyInspectorChanges();
             });
-
             card.appendChild(field);
         });
-
         contentInspectorEl.appendChild(card);
     }
 
-    // 2. Paragraphs (p)
     const paragraphs = doc.querySelectorAll('p');
     if (paragraphs.length > 0) {
         const card = document.createElement('div');
         card.className = 'inspector-card';
-        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-align-left"></i> Body Text & Paragraphs (${paragraphs.length})</div>`;
-
+        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-align-left"></i> Body Text</div>`;
         paragraphs.forEach((p, idx) => {
             const field = document.createElement('div');
             field.className = 'inspector-field';
-            const previewText = p.textContent.trim().substring(0, 40) || `Paragraph ${idx + 1}`;
-
             field.innerHTML = `
-                <label class="inspector-label"><i class="fa-solid fa-paragraph"></i> Paragraph ${idx + 1} (${previewText}...):</label>
-                <textarea class="inspector-textarea" data-index="${idx}">${p.textContent.trim()}</textarea>
+                <label class="inspector-label">Paragraph ${idx + 1}:</label>
+                <textarea class="inspector-textarea">${p.textContent.trim()}</textarea>
             `;
-
             const textarea = field.querySelector('textarea');
             textarea.addEventListener('input', () => {
                 p.textContent = textarea.value;
-                saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+                applyInspectorChanges();
             });
-
             card.appendChild(field);
         });
-
         contentInspectorEl.appendChild(card);
     }
 
-    // 3. Links and Buttons (a, button)
     const links = doc.querySelectorAll('a, button.briants-btn');
     if (links.length > 0) {
         const card = document.createElement('div');
         card.className = 'inspector-card';
-        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-link"></i> Links & Buttons (${links.length})</div>`;
-
+        card.innerHTML = `<div class="inspector-card-title"><i class="fa-solid fa-link"></i> Links & Buttons</div>`;
         links.forEach((link, idx) => {
             const field = document.createElement('div');
             field.className = 'inspector-field';
             const isAnchor = link.tagName === 'A';
             const linkText = link.textContent.trim();
-            const hrefVal = isAnchor ? (link.getAttribute('href') || '#') : '(Button Action)';
+            const hrefVal = isAnchor ? (link.getAttribute('href') || '#') : '(Button)';
 
             field.innerHTML = `
                 <div class="inspector-link-row">
                     <div>
-                        <label class="inspector-label"><i class="fa-solid fa-font"></i> Button / Link Text:</label>
+                        <label class="inspector-label">Link Label:</label>
                         <input type="text" class="inspector-input link-text-input" value="${escapeHtmlAttr(linkText)}">
                     </div>
                     <div>
-                        <label class="inspector-label"><i class="fa-solid fa-arrow-up-right-from-square"></i> Link Target (href):</label>
+                        <label class="inspector-label">Link URL:</label>
                         <input type="text" class="inspector-input link-href-input" value="${escapeHtmlAttr(hrefVal)}" ${!isAnchor ? 'disabled' : ''}>
                     </div>
                 </div>
@@ -964,26 +1245,24 @@ function renderContentInspector() {
             const hrefInput = field.querySelector('.link-href-input');
 
             textInput.addEventListener('input', () => {
-                // Preserve icons inside buttons if present
                 const icon = link.querySelector('i');
                 if (icon) {
                     link.innerHTML = textInput.value + ' ' + icon.outerHTML;
                 } else {
                     link.textContent = textInput.value;
                 }
-                saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+                applyInspectorChanges();
             });
 
             if (isAnchor) {
                 hrefInput.addEventListener('input', () => {
                     link.setAttribute('href', hrefInput.value);
-                    saveSectionHtmlLocally(activeSectionId, doc.body.innerHTML, true);
+                    applyInspectorChanges();
                 });
             }
 
             card.appendChild(field);
         });
-
         contentInspectorEl.appendChild(card);
     }
 }
