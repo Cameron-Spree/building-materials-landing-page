@@ -1924,33 +1924,51 @@ document.querySelectorAll('#briants-brands .brand-track').forEach(track => {
     </div>
 </section>`,
     css: `/* ==========================================================================
-   Why Choose Us Styles
+   Why Choose Us Styles (Briants Green Theme)
    ========================================================================== */
 
 #briants-why-us {
-    background-color: var(--briants-bg-light);
+    background: linear-gradient(145deg, #004524 0%, #005c30 100%);
+    color: #ffffff;
 }
 
-.feature-box {
-    background-color: var(--briants-bg-white);
-    border: 1px solid var(--briants-border);
+#briants-why-us .briants-section-subtitle {
+    background: rgba(210, 161, 56, 0.2);
+    color: #ffd875;
+    border-color: rgba(210, 161, 56, 0.4);
+}
+
+#briants-why-us .briants-section-header h2 {
+    color: #ffffff;
+}
+
+#briants-why-us .briants-section-header p {
+    color: #e2e8f0;
+}
+
+#briants-why-us .feature-box {
+    background-color: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: var(--briants-radius-md);
     padding: 2.25rem 1.75rem;
     transition: var(--briants-transition);
 }
 
-.feature-box:hover {
+#briants-why-us .feature-box:hover {
     transform: translateY(-5px);
-    box-shadow: var(--briants-shadow-lg);
-    border-color: var(--briants-primary);
+    background-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    border-color: var(--briants-accent);
 }
 
-.feature-icon {
+#briants-why-us .feature-icon {
     width: 60px;
     height: 60px;
     border-radius: var(--briants-radius-md);
-    background-color: var(--briants-tint-green);
-    color: var(--briants-primary);
+    background-color: var(--briants-accent);
+    color: #00361c;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1959,22 +1977,23 @@ document.querySelectorAll('#briants-brands .brand-track').forEach(track => {
     transition: var(--briants-transition);
 }
 
-.feature-box:hover .feature-icon {
-    background-color: var(--briants-primary);
-    color: #ffffff;
+#briants-why-us .feature-box:hover .feature-icon {
+    background-color: #ffffff;
+    color: var(--briants-primary);
+    transform: scale(1.06);
 }
 
-.feature-box h3 {
+#briants-why-us .feature-box h3 {
     font-family: var(--briants-font-headings);
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--briants-text-dark);
+    color: #ffffff;
     margin: 0 0 0.65rem 0;
 }
 
-.feature-box p {
-    font-size: 0.9rem;
-    color: var(--briants-text-muted);
+#briants-why-us .feature-box p {
+    font-size: 0.92rem;
+    color: #cbd5e1;
     line-height: 1.6;
     margin: 0;
 }`
