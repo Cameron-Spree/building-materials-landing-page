@@ -860,18 +860,26 @@ const SECTIONS_DATA = [
     </div>
 </section>`,
     css: `/* ==========================================================================
-   Quick Navigation Categories Styles
+   Quick Navigation Categories Styles (Subtle Merchant Sage Tint)
    ========================================================================== */
 
 #briants-quick-categories {
-    background-color: var(--briants-bg-white);
+    background: linear-gradient(180deg, #f0f5f2 0%, #e8f0eb 100%);
+    border-top: 1px solid #dbe6df;
+    border-bottom: 1px solid #dbe6df;
+}
+
+#briants-quick-categories .briants-section-subtitle {
+    background-color: #e1ede5;
+    color: var(--briants-primary);
+    border-color: #c2dbcc;
 }
 
 .quick-cat-card {
-    background-color: var(--briants-bg-light);
-    border: 1px solid var(--briants-border);
+    background-color: #ffffff;
+    border: 1px solid #dbe4dd;
     border-radius: var(--briants-radius-md);
-    padding: 1.5rem 1.15rem;
+    padding: 1.6rem 1.15rem;
     text-decoration: none;
     color: var(--briants-text-dark);
     display: flex;
@@ -880,22 +888,23 @@ const SECTIONS_DATA = [
     text-align: center;
     transition: var(--briants-transition);
     position: relative;
+    box-shadow: 0 4px 10px rgba(0, 45, 20, 0.04);
 }
 
 .quick-cat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--briants-shadow-lg);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 45, 20, 0.12);
     border-color: var(--briants-primary);
-    background-color: #ffffff;
 }
 
 .quick-cat-featured {
-    border-color: rgba(249, 115, 22, 0.4);
-    background-color: #fff7ed;
+    border-color: rgba(249, 115, 22, 0.45);
+    background: linear-gradient(180deg, #ffffff 0%, #fffbf5 100%);
 }
 
 .quick-cat-featured:hover {
     border-color: var(--briants-safety-orange);
+    box-shadow: 0 12px 24px rgba(249, 115, 22, 0.15);
 }
 
 .feat-pill {
@@ -907,38 +916,35 @@ const SECTIONS_DATA = [
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 0.2rem 0.6rem;
+    padding: 0.2rem 0.65rem;
     border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);
 }
 
 .quick-cat-card .cat-icon-box {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background-color: var(--briants-tint-green);
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background-color: #e9f3ef;
     color: var(--briants-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.55rem;
     margin-bottom: 1rem;
     transition: var(--briants-transition);
 }
 
-.quick-cat-featured .cat-icon-box {
-    background-color: #ffedd5;
-    color: var(--briants-safety-orange);
-}
+.quick-cat-card:nth-child(1) .cat-icon-box { background-color: #fef2f2; color: #b91c1c; } /* Bricks */
+.quick-cat-card:nth-child(2) .cat-icon-box { background-color: #fefce8; color: #ca8a04; } /* Insulation */
+.quick-cat-card:nth-child(3) .cat-icon-box { background-color: #f0fdf4; color: #16a34a; } /* Timber */
+.quick-cat-card:nth-child(4) .cat-icon-box { background-color: #ffedd5; color: #ea580c; } /* Machinery */
+.quick-cat-card:nth-child(5) .cat-icon-box { background-color: #f1f5f9; color: #475569; } /* Aggregates */
+.quick-cat-card:nth-child(6) .cat-icon-box { background-color: #f0f9ff; color: #0284c7; } /* Plaster */
 
 .quick-cat-card:hover .cat-icon-box {
-    background-color: var(--briants-primary);
-    color: #ffffff;
-    transform: scale(1.08);
-}
-
-.quick-cat-featured:hover .cat-icon-box {
-    background-color: var(--briants-safety-orange);
-    color: #ffffff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .quick-cat-card h3 {
@@ -964,6 +970,12 @@ const SECTIONS_DATA = [
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    transition: var(--briants-transition);
+}
+
+.quick-cat-card:hover .cat-link {
+    color: var(--briants-primary-hover);
+    transform: translateX(3px);
 }`
   },
   {
