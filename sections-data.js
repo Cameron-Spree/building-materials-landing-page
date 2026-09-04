@@ -1346,38 +1346,20 @@ const SECTIONS_DATA = [
             <p>Responsibly sourced, FSC-certified graded timber and engineered sheet materials kept in dry storage ready for prompt collection or site delivery.</p>
         </div>
         
-        <div class="briants-grid-4">
+        <div class="briants-grid-2">
             <div class="product-tile">
                 <div class="tile-icon"><i class="fa-solid fa-tree"></i></div>
-                <h3>C24 Graded Structural Timber</h3>
-                <p>Kiln-dried, regularised, eased-edge treated timber for floor joists, stud walls, roof rafters, and heavy structural framing.</p>
+                <h3>C24 Graded Timber & Studwork</h3>
+                <p>Responsibly sourced, FSC-certified C24/C16 structural treated timber for floor joists, roof rafters, CLS partition studwork, and graded roofing battens.</p>
                 <div class="tile-footer">
-                    <a href="#briants-quick-categories" class="cat-action-link">Explore Carcassing <i class="fa-solid fa-chevron-right"></i></a>
-                </div>
-            </div>
-            
-            <div class="product-tile">
-                <div class="tile-icon"><i class="fa-solid fa-ruler-combined"></i></div>
-                <h3>CLS Studwork & Framing</h3>
-                <p>Planed all-round timber with radiused edges, engineered specifically for internal partition walls and timber frame construction.</p>
-                <div class="tile-footer">
-                    <a href="#briants-quick-categories" class="cat-action-link">Explore Studwork <i class="fa-solid fa-chevron-right"></i></a>
+                    <a href="#briants-quick-categories" class="cat-action-link">Explore Timber <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
             </div>
             
             <div class="product-tile">
                 <div class="tile-icon"><i class="fa-solid fa-layer-group"></i></div>
-                <h3>Plywood & Structural Panels</h3>
-                <p>Hardwood-faced, marine grade, and softwood plywood sheets for structural sheathing, joinery, flat roofing, and flooring.</p>
-                <div class="tile-footer">
-                    <a href="#briants-quick-categories" class="cat-action-link">Explore Plywood <i class="fa-solid fa-chevron-right"></i></a>
-                </div>
-            </div>
-            
-            <div class="product-tile">
-                <div class="tile-icon"><i class="fa-solid fa-sheet-plastic"></i></div>
-                <h3>OSB3, MDF & Flooring</h3>
-                <p>Moisture-resistant OSB3 structural boards, MR moisture-resistant green core MDF, and tongue & groove P5 chipboard flooring.</p>
+                <h3>Engineered Sheet Materials & Flooring</h3>
+                <p>High-grade hardwood-faced plywood, marine grade ply, moisture-resistant OSB3 structural boards, MDF, and tongue & groove P5 chipboard flooring.</p>
                 <div class="tile-footer">
                     <a href="#briants-quick-categories" class="cat-action-link">Explore Sheets <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
